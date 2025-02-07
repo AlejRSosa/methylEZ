@@ -37,4 +37,4 @@ Issues = "https://github.com/AlejRSosa/methylEZ/issues"
 Source = "https://github.com/AlejRSosa/methylEZ"
 
 [project.scripts]
-methylEZ = "methylEZ.main:main"
+methylEZ = "methylEZ.main:MainMenuGUI"
