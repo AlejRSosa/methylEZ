@@ -1,4 +1,4 @@
-yl'''
+'''
 MethylEZ - A GUI for methylation sequencing workflow
 Author: Alejandra Rodriguez-Sosa
 Date: 06-02-2025
