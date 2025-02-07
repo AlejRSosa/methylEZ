@@ -5,6 +5,17 @@ Date: 06-02-2025
 
 '''
 import tkinter as tk
+try:
+    import tkinter as tk
+except ImportError:
+    print("\nError: Tkinter is not installed!\n")
+    print("Please install Tkinter manually:\n")
+    print("🔹 On Ubuntu/Debian: sudo apt install python3-tk")
+    print("🔹 On Fedora: sudo dnf install python3-tkinter")
+    print("🔹 On Arch Linux: sudo pacman -S tk")
+    print("🔹 On Windows/macOS: Reinstall Python with the 'tcl/tk' option enabled.")
+    exit(1)
+
 from methylEZ.gui import MethylSeqGUI  # Your existing GUI
 #from methylEZ.hsmetrics_gui import HSMetricsGUI  # New GUI for CollectHsMetrics (to be implemented)
 #from methylEZ.dmr_gui import DMRGUI  # New GUI for downstream analysis (to be implemented)
