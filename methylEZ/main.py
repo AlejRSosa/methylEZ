@@ -55,6 +55,12 @@ def launch_submenu(sub_gui_class):
 
     root.mainloop()
 
+def start_gui():
+    """Launch the main GUI."""
+    root = tk.Tk()
+    app = MainMenuGUI(root)
+    root.mainloop()
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = MainMenuGUI(root)
