@@ -6,9 +6,9 @@ Date: 06-02-2025
 '''
 import tkinter as tk
 from methylEZ.gui import MethylSeqGUI  # Your existing GUI
-#from hsmetrics_gui import HSMetricsGUI  # New GUI for CollectHsMetrics (to be implemented)
-#from dmr_gui import DMRGUI  # New GUI for downstream analysis (to be implemented)
-from navigation import return_to_main
+#from methylEZ.hsmetrics_gui import HSMetricsGUI  # New GUI for CollectHsMetrics (to be implemented)
+#from methylEZ.dmr_gui import DMRGUI  # New GUI for downstream analysis (to be implemented)
+from methylEZ.navigation import return_to_main
 
 class MainMenuGUI:
     def __init__(self, root):
