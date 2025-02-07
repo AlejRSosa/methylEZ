@@ -28,8 +28,7 @@ classifiers = [
 ]
 dependencies = [
   "pandas",
-  "pyperclip",
-  "tkinter"
+  "pyperclip"
 ]
 
 [project.urls]
