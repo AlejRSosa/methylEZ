@@ -5,13 +5,12 @@ setup(
     version="0.1",
     packages=find_packages(),
     install_requires=[
-     #   "tkinter",
         "pandas",
         "pyperclip",
     ],
     entry_points={
-        "gui_scripts": [
-            "methylEZ = main:main",  # run 'methylEZ' via command line
+        "console_scripts": [
+            "methylEZ = main:main",  # Ensure this points to main.py
         ],
     },
 )
