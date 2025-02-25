@@ -1,10 +1,10 @@
 import os
 import tkinter as tk
 from tkinter import messagebox
-from command_generator import generate_samplesheet, generate_command
-from utils import copy_command_to_clipboard, select_directory
-from file_manager import add_files, clear_selected_files, clear_all_files, move_up, move_down
-from navigation import return_to_main #importing the return function to generate a "back to main menu button"
+from methylEZ.command_generator import generate_samplesheet, generate_command
+from methylEZ.utils import copy_command_to_clipboard, select_directory
+from methylEZ.file_manager import add_files, clear_selected_files, clear_all_files, move_up, move_down
+from methylEZ.navigation import return_to_main #importing the return function to generate a "back to main menu button"
 
 class MethylSeqGUI:
     def __init__(self, root):
@@ -44,7 +44,7 @@ class MethylSeqGUI:
         # Initial window size
         self.root.geometry("1300x850")  # Adjusted to fit everything
         self.back_button=tk.Button(self.root, text="⬅ Back to Main menu", command=lambda:return_to_main(self.root))
-        self.back_button.pack(pady=10, padx=25)
+        self.back_button.pack(pady=10)
         try:
             # Store selected files and pipeline settings
             self.file_paths = []
