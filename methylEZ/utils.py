@@ -1,5 +1,5 @@
-import tkinter as tk
 import pyperclip
+import tkinter as tk
 from tkinter import filedialog
 
 def copy_command_to_clipboard(self):
