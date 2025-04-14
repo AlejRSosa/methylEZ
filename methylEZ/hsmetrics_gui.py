@@ -3,8 +3,8 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox, filedialog, scrolledtext
 import subprocess
-from hsmetrics_command_generator import generate_hsmetrics_command
-from hsmetrics_runner import run_picard_hsmetrics
+from methylEZ.hsmetrics_command_generator import generate_hsmetrics_command
+from methylEZ.hsmetrics_runner import run_picard_hsmetrics
 from methylEZ.utils import copy_command_to_clipboard, select_directory
 #from navigation import Navigation - not needed anymore cause hsmetrics_main_gui is the one doing the navigation
 
