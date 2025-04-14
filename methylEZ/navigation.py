@@ -1,14 +1,14 @@
+# Navigation class is a subclass of tk.Frame which acts as a base class for the GUIs
+# We originally had them inherit from tk.Frame, but the sub-menu structure was not working
+# This class is instantiated and allows the back button to be displayed on any page
+# The back button is only shown if a callback function is provided
+
 import tkinter as tk
+import tkinter.ttk as ttk
 
-def return_to_main(current_window):
-    """Destroy the current window and go back to the Main Menu."""
-    from methylEZ.main import MainMenuGUI  # Import inside function to avoid circular dependency
-
-    # Destroy the current window but keep the main Tk instance running
-    if current_window:
-        current_window.destroy()
-
-    # Instead of creating a new Tk instance, reuse the existing one
-    new_root = tk.Tk()  # Ensure a single Tk instance
-    app = MainMenuGUI(new_root)
-    new_root.mainloop()  # Start the mainloop again
+class Navigation(ttk.Frame):
+    def __init__(self, master, back_callback=None, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        # If a back_callback is provided, create a back button.
+        if back_callback:
+            ttk.Button(self, text="⬅ Back to Main menu", command=back_callback).pack(pady=10)
