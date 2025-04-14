@@ -23,9 +23,9 @@ except ImportError:
 from tkinter import ttk # import aesthetic ttk module for buttons, labels, etc.
 from ttkthemes import ThemedStyle  # import ttkthemes for more aesthetic stuff (I tried to make it look pretty, don't judge me)
 # Import all GUI classes
-from gui import MethylSeqGUI  # methylseq preparation
+from methylEZ.gui import MethylSeqGUI  # methylseq preparation
 #from hsmetrics_gui import HSMetricsGUI  # CollectHsMetrics 
-from hsmetrics_main_gui import MainPicardGUI  # CollectHsMetrics GUI
+from methylEZ.hsmetrics_main_gui import MainPicardGUI  # CollectHsMetrics GUI
 #from methylEZ.dmr_gui import DMRGUI  # New GUI for downstream analysis (to be implemented)
 
 class MainMenu(ttk.Frame):
