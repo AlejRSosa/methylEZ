@@ -8,7 +8,7 @@ from click import option
 from methylEZ.command_generator import generate_samplesheet, generate_command
 from methylEZ.utils import copy_command_to_clipboard, select_directory
 from methylEZ.file_manager import add_files, clear_selected_files, clear_all_files, move_up, move_down
-from navigation import Navigation
+from methylEZ.navigation import Navigation
 
 # The section corresponding to the methylseq preparation option inherits from Navigation
 # the constructor of Navigation is called to create the back button
