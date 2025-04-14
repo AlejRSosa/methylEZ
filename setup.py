@@ -8,6 +8,8 @@ setup(
         "pandas",
         "pyperclip",
         "ttkthemes",
+        "biopython",
+        "click",
     ],
     entry_points={
         "console_scripts": [
