@@ -34,9 +34,9 @@ class MainMenu(ttk.Frame):
         self.controller=controller
         self.back_callback = back_callback
 
-        self.logo = tk.PhotoImage(file=r"C:\Users\aroso\Documents\GitHub\methylEZ\methylEZ\METHYLEZ_LOGO3.png").subsample(2,2)
-        logo_label = ttk.Label(self, image=self.logo)
-        logo_label.pack(pady=10)
+        #self.logo = tk.PhotoImage(file=r"C:\Users\aroso\Documents\GitHub\methylEZ\methylEZ\METHYLEZ_LOGO3.png").subsample(2,2)
+        #logo_label = ttk.Label(self, image=self.logo)
+        #logo_label.pack(pady=10)
 
         #ttk.Label(self, text="Welcome to MethylEZ", font=("Arial", 20)).pack(pady=10)
         ttk.Label(self, text="Select an option to continue:", font=("Arial", 16)).pack(pady=5)
