@@ -127,6 +127,14 @@ class App(tk.Tk):
          #   self.geometry("800x700")
         frame.tkraise()
 
-if __name__ == "__main__":
+#When running it locally, if __name__ == "__main__":
+    #app = App()
+    #app.mainloop()
+# was enough, but the setuptools entry points need a callable function to import, so I am adding a callable main 
+
+def main():
     app = App()
-    app.mainloop()
+    app.mainloop() 
+
+if __name__ == "__main__":
+    main()
