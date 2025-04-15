@@ -28,7 +28,10 @@ classifiers = [
 ]
 dependencies = [
   "pandas",
-  "pyperclip"
+  "pyperclip", 
+  "ttkthemes",
+  "biopython",
+  "click"
 ]
 
 [project.urls]
@@ -37,5 +40,5 @@ Issues = "https://github.com/AlejRSosa/methylEZ/issues"
 Source = "https://github.com/AlejRSosa/methylEZ"
 
 [project.scripts]
-methylEZ = "methylEZ.main:start_gui"
+methylEZ = "methylEZ.main:main"
 
