@@ -9,6 +9,9 @@ Date: 06-02-2025
 # tkraise() method, avoiding duplicate widget and loss of efficiency by generation / destroying widgets dynamically.
 
 import tkinter as tk
+from pathlib import Path
+
+from streamlit import logo
 #from matplotlib import scale
 try:
     import tkinter as tk
@@ -34,9 +37,13 @@ class MainMenu(ttk.Frame):
         self.controller=controller
         self.back_callback = back_callback
 
-        #self.logo = tk.PhotoImage(file=r"C:\Users\aroso\Documents\GitHub\methylEZ\methylEZ\METHYLEZ_LOGO3.png").subsample(2,2)
-        #logo_label = ttk.Label(self, image=self.logo)
-        #logo_label.pack(pady=10)
+        #Calling the logo from assets
+        current_dir = Path(__file__).resolve().parent
+        logo_path=current_dir / "assets" / "METHYLEZ_LOGO3.png"
+
+        self.logo = tk.PhotoImage(file=str(logo_path)).subsample(2,2)
+        logo_label = ttk.Label(self, image=self.logo)
+        logo_label.pack(pady=10)
 
         #ttk.Label(self, text="Welcome to MethylEZ", font=("Arial", 20)).pack(pady=10)
         ttk.Label(self, text="Select an option to continue:", font=("Arial", 16)).pack(pady=5)
