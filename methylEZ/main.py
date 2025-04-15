@@ -11,7 +11,7 @@ Date: 06-02-2025
 import tkinter as tk
 from pathlib import Path
 
-from streamlit import logo
+#from streamlit import logo
 #from matplotlib import scale
 try:
     import tkinter as tk
