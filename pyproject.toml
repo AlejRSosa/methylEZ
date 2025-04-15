@@ -42,3 +42,6 @@ Source = "https://github.com/AlejRSosa/methylEZ"
 [project.scripts]
 methylEZ = "methylEZ.main:main"
 
+[tool.setuptools.package-data]
+methylEZ = ["assets/*.png"]
+
