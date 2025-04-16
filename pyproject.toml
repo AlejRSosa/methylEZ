@@ -43,5 +43,5 @@ Source = "https://github.com/AlejRSosa/methylEZ"
 methylEZ = "methylEZ.main:main"
 
 [tool.setuptools.package-data]
-methylEZ = ["assets/*.png"]
+methylEZ = ["assets/*.png", "bin/*.jar"]
 
