@@ -94,7 +94,7 @@ class PicardPreparationFrame(ttk.Frame):
         bed_button = ttk.Button(bed_frame, text="Browse", command=self.select_bed)
         bed_button.grid(row=0, column=2, padx=5, pady=2)
         interval_button = ttk.Button(bed_frame, text="Generate Interval List", command=self.generate_interval_list)
-        interval_button.grid(row=3, column=0, columnspan=3, pady=2)
+        interval_button.grid(row=3, column=2, columnspan=3, pady=2)
         dict_label = ttk.Label(bed_frame, text="Sequence Dictionary:")
         dict_label.grid(row=2, column=0, sticky="w", padx=5, pady=2)
         self.dict_entry = ttk.Entry(bed_frame, width=50)
@@ -103,7 +103,7 @@ class PicardPreparationFrame(ttk.Frame):
         dict_button.grid(row=2, column=2, padx=5, pady=2)
         #Export command for BED section only
         export_bed_button = ttk.Button(bed_frame, text="Export BED Commands", command=self.export_bed_commands)
-        export_bed_button.grid(row=3, column=1, columnspan=3, pady=2)
+        export_bed_button.grid(row=3, column=0, columnspan=3, pady=2)
         row += 1
         
         # (5) Export Preparation Commands
