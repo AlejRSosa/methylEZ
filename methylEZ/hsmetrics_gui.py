@@ -6,6 +6,8 @@ import subprocess
 from methylEZ.hsmetrics_command_generator import generate_hsmetrics_command
 from methylEZ.hsmetrics_runner import run_picard_hsmetrics
 from methylEZ.utils import copy_command_to_clipboard, select_directory
+import methylEZ
+from pathlib import Path
 #from navigation import Navigation - not needed anymore cause hsmetrics_main_gui is the one doing the navigation
 
 class HSMetricsGUI(ttk.Frame):
