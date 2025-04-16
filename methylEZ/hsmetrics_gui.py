@@ -28,7 +28,7 @@ class HSMetricsGUI(ttk.Frame):
         # Final button to export the code to .txt
         self.export_button = ttk.Button(self.command_button_frame, text="Export Template Code",
                                         command=self.export_run_code)
-        self.export_button.grid(row=2, column=1, padx=5, pady=(0,5), sticky="ew") #changing column and padx to determine where it looks best
+        self.export_button.grid(row=0, column=1, padx=5, pady=(0,5), sticky="ew") #changing column and padx to determine where it looks best
         #column=0, padx=5, pady=(0,5), sticky="ew"
 
     def create_folder_selection_frame(self):
