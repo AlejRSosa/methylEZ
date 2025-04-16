@@ -8,7 +8,7 @@ from methylEZ.hsmetrics_command_generator import generate_hsmetrics_command
 from methylEZ.utils import copy_command_to_clipboard, select_directory
 import methylEZ
 from pathlib import Path
-#from navigation import Navigation - not needed anymore cause hsmetrics_main_gui is the one doing the navigation
+import methylEZ.hsmetrics_parser as hs_parser  #we will later call hs_parser.parse_picard_output()
 
 class HSMetricsGUI(ttk.Frame):
     def __init__(self, parent, controller, output_dir, back_callback=None):
@@ -141,6 +141,12 @@ class HSMetricsGUI(ttk.Frame):
         self.generate_command_button = ttk.Button(self.command_button_frame, text="Generate Command",
                                                   command=lambda: generate_hsmetrics_command(self))
         self.generate_command_button.grid(row=0, column=0, padx=5)
+        self.parse_output_button = ttk.Button(self.command_button_frame, text="Parse CollectHsMetrics Output",
+                                           command=self.run_parser)
+        self.parse_output_button.grid(row=1, column=0, padx=5)
+        self.export_parser_button = ttk.Button(self.command_button_frame, text="Export Parser Template",
+                                            command=self.export_parser_template)
+        self.export_parser_button.grid(row=1, column=1, padx=5)
         #self.run_command_button = ttk.Button(self.command_button_frame, text="Run Picard CollectHsMetrics",
         #                                     command=lambda: run_picard_hsmetrics(self))
         #self.run_command_button.grid(row=0, column=1, padx=5)
@@ -279,4 +285,49 @@ class HSMetricsGUI(ttk.Frame):
         else:
             messagebox.showinfo("Canceled", "No file selected.")
         
-        
+    def run_parser(self):    
+        directory = filedialog.askdirectory(title="Select Folder containing Picard Output Files")
+        if not directory:
+            messagebox.showerror("Error", "No folder selected for parsing.")
+            return
+
+        # Ask the user where to save the consolidated CSV.
+        output_csv = filedialog.asksaveasfilename(title="Save Parsed Output as CSV",
+                                                defaultextension=".csv")
+        if not output_csv:
+            messagebox.showinfo("Canceled", "No output file selected.")
+            return
+
+        try:
+            hs_parser.parse_picard_output(directory, output_csv)
+            messagebox.showinfo("Success", f"Parsed data saved to {output_csv}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Error during parsing: {e}") 
+    
+    def export_parser_template(self):
+        # Define a template string that calls your parser function.
+        template_code = '''#!/usr/bin/env python
+    from methylEZ.hsmetrics_parser import parse_picard_output
+
+    # Set these variables accordingly:
+    picard_output_directory = r"Path_to_Picard_Output_Folder"
+    output_csv = r"Path_where_the_CSV_should_be_saved.csv"
+
+    parse_picard_output(picard_output_directory, output_csv)
+    print("Parsed data saved to", output_csv)
+    '''
+        # Ask the user where to save the file:
+        output_dir = self.output_dir.get() if hasattr(self, "output_dir") else os.getcwd()
+        filename = filedialog.asksaveasfilename(title="Save Parser Template",
+                                                defaultextension=".py",
+                                                initialdir=output_dir,
+                                                initialfile="parser_template.py")
+        if filename:
+            try:
+                with open(filename, "w") as f:
+                    f.write(template_code)
+                messagebox.showinfo("Success", f"Parser template exported to:\n{filename}")
+            except Exception as e:
+                messagebox.showerror("Error", f"Error writing file: {e}")
+        else:
+            messagebox.showinfo("Canceled", "No file selected.")

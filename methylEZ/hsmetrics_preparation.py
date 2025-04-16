@@ -103,7 +103,7 @@ class PicardPreparationFrame(ttk.Frame):
         dict_button.grid(row=2, column=2, padx=5, pady=2)
         #Export command for BED section only
         export_bed_button = ttk.Button(bed_frame, text="Export BED Commands", command=self.export_bed_commands)
-        export_bed_button.grid(row=3, column=0, columnspan=3, pady=2)
+        export_bed_button.grid(row=3, column=2, columnspan=3, pady=2)
         row += 1
         
         # (5) Export Preparation Commands
