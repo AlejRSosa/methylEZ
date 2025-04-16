@@ -4,7 +4,7 @@ import tkinter.ttk as ttk
 from tkinter import messagebox, filedialog, scrolledtext
 import subprocess
 from methylEZ.hsmetrics_command_generator import generate_hsmetrics_command
-from methylEZ.hsmetrics_runner import run_picard_hsmetrics
+#from methylEZ.hsmetrics_runner import run_picard_hsmetrics - not needed anymore cause we are focusing only on template generation
 from methylEZ.utils import copy_command_to_clipboard, select_directory
 import methylEZ
 from pathlib import Path
@@ -22,7 +22,7 @@ class HSMetricsGUI(ttk.Frame):
         # Remove the output directory input here, as it's in the left pane.
         self.create_folder_selection_frame()
         self.create_command_generation_section()
-        self.create_real_time_output_section()
+        #self.create_real_time_output_section()
         self.create_status_bar()
 
         # Final button to export the code to .txt
@@ -141,22 +141,22 @@ class HSMetricsGUI(ttk.Frame):
         self.generate_command_button = ttk.Button(self.command_button_frame, text="Generate Command",
                                                   command=lambda: generate_hsmetrics_command(self))
         self.generate_command_button.grid(row=0, column=0, padx=5)
-        self.run_command_button = ttk.Button(self.command_button_frame, text="Run Picard CollectHsMetrics",
-                                             command=lambda: run_picard_hsmetrics(self))
-        self.run_command_button.grid(row=0, column=1, padx=5)
-        self.copy_command_button = ttk.Button(self.command_button_frame, text="Copy Command",
-                                              command=lambda: copy_command_to_clipboard(self))
-        self.copy_command_button.grid(row=0, column=2, padx=5)
+        #self.run_command_button = ttk.Button(self.command_button_frame, text="Run Picard CollectHsMetrics",
+        #                                     command=lambda: run_picard_hsmetrics(self))
+        #self.run_command_button.grid(row=0, column=1, padx=5)
+        #self.copy_command_button = ttk.Button(self.command_button_frame, text="Copy Command",
+        #                                      command=lambda: copy_command_to_clipboard(self))
+        #self.copy_command_button.grid(row=0, column=1, padx=5)
 
-        self.command_text = tk.Text(self.command_button_frame, height=4, width=100)
-        self.command_text.grid(row=1, column=0, columnspan=3, pady=5)
-    def create_real_time_output_section(self):
+        #self.command_text = tk.Text(self.command_button_frame, height=4, width=100)
+        #self.command_text.grid(row=1, column=0, columnspan=3, pady=5)
+    """ def create_real_time_output_section(self):
         self.output_frame = ttk.Frame(self)
         self.output_frame.pack(pady=5)
         self.output_label = ttk.Label(self.output_frame, text="Real-Time Execution Output:")
         self.output_label.pack()
         self.output_text = scrolledtext.ScrolledText(self.output_frame, height=10, width=120, state=tk.DISABLED)
-        self.output_text.pack()
+        self.output_text.pack() """
 
     def update_status_bar(self, message):
         self.status_bar.config(text=message)
@@ -188,7 +188,7 @@ class HSMetricsGUI(ttk.Frame):
             entry.delete(0, tk.END)
             entry.insert(0, file)
 
-    def run_picard_hsmetrics(self):
+    """ def run_picard_hsmetrics(self):
         command = self.command_text.get("1.0", tk.END).strip()
         if not command:
             messagebox.showerror("Error", "No command generated. Please generate it first.")
@@ -211,7 +211,7 @@ class HSMetricsGUI(ttk.Frame):
         self.output_text.config(state=tk.NORMAL)
         self.output_text.insert(tk.END, "\nProcess completed.\n")
         self.output_text.config(state=tk.DISABLED)
-
+ """
     def export_run_code(self):
         # Get common parameters from the entries:
         output_dir = self.output_dir.get() if hasattr(self, "output_dir") else os.getcwd()

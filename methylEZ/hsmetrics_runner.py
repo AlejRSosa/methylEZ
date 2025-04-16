@@ -1,3 +1,5 @@
+##UPDATE: april 2025 - removed the functionality of hsmetrics_runner altogether from the hsmetrics_gui to focus on template generation
+
 import subprocess
 import tkinter as tk
 from tkinter import messagebox
