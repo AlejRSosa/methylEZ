@@ -145,7 +145,7 @@ class HSMetricsGUI(ttk.Frame):
                                            command=self.run_parser)
         self.parse_output_button.grid(row=1, column=0, padx=5)
         self.export_parser_button = ttk.Button(self.command_button_frame, text="Export Parser Template",
-                                            command=self.export_parser_template)
+                                            command=self.export_parse_template)
         self.export_parser_button.grid(row=1, column=1, padx=5)
         #self.run_command_button = ttk.Button(self.command_button_frame, text="Run Picard CollectHsMetrics",
         #                                     command=lambda: run_picard_hsmetrics(self))
