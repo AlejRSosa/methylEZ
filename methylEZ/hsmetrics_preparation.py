@@ -399,7 +399,8 @@ class PicardPreparationFrame(ttk.Frame):
         '''
             commands.append(prep_code)
             commands.append(f'samtools faidx "{sorted_fasta}"')
-            picard_jar_path = os.path.join(os.getcwd(), "lib", "picard.jar")
+            #picard_jar_path = os.path.join(os.getcwd(), "lib", "picard.jar")
+            picard_jar_path = Path(methylEZ.__file__).resolve().parent / "assets" / "picard.jar"
             dict_file = os.path.splitext(sorted_fasta)[0] + ".dict"
             commands.append(f'java -jar "{picard_jar_path}" CreateSequenceDictionary R="{sorted_fasta}" O="{dict_file}"')
         if bam:
