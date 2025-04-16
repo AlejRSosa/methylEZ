@@ -223,7 +223,7 @@ class HSMetricsGUI(ttk.Frame):
             messagebox.showerror("Error", "No input folder specified for BAM files.")
             return
 
-        picard_jar = os.path.join(os.getcwd(), "lib", "picard.jar")
+        picard_jar = Path(methylEZ.__file__).resolve().parent / "assets" / "picard.jar"
         ref_genome = "filtered_hg19_ensembl.fa"  # or get from an entry if you allow the user to change it
 
         # Build the code snippet as a multiline string.

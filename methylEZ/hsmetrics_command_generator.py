@@ -1,12 +1,15 @@
 import os
 import glob
 import tkinter as tk
+import methylEZ
+from pathlib import Path
 from tkinter import messagebox
 
 # Variables (preset, but can be changed by user)
 
 DEFAULT_REF_GENOME = "filtered_hg19_ensembl.fa"
-DEFAULT_PICARD_JAR = os.path.join(os.getcwd(), "lib", "picard.jar")
+DEFAULT_PICARD_JAR = Path(methylEZ.__file__).resolve().parent / "assets" / "picard.jar"
+
 # get current working directory and joins it with the lib directory name and file name
 # using the right path separator according to operating system (Win \, Linux or Mac /)
 
