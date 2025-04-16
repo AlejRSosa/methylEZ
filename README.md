@@ -10,7 +10,7 @@ Open your terminal (or PowerShell on Windows) and run:
 1.Install the package directly from GitHub: 
 pip install git+https://github.com/AlejRSosa/methylEZ.git
 
-2. Launch the application:
+2.Launch the application:
 methylEZ
 
 ## Dependencies
@@ -19,7 +19,10 @@ Other dependencies are also bundled (pandas, pyperclip, ttkthemes, biopython and
 Tkinter is required and should be installed upon download, but if you get `ModuleNotFoundError: No module named 'tkinter'`, install it manually:
 
 🔹 On Ubuntu/Debian: sudo apt install python3-tk
+
 🔹 On Fedora: sudo dnf install python3-tkinter
+
 🔹 On Arch Linux: sudo pacman -S tk
+
 🔹 On Windows/macOS: Reinstall Python with the "tcl/tk" option enabled.
 
