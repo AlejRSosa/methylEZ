@@ -14,7 +14,10 @@ pip install git+https://github.com/AlejRSosa/methylEZ.git
 methylEZ
 
 ## Dependencies
-methylEZ bundles Picard.jar (MIT licensed). You do not need to download Picard separately.
+methylEZ bundles Picard.jar (MIT licensed). You do not need to download Picard separately. Picard Tools requires a Java version. Please follow the instructions in Picard Tools documentation to ensure that you have the right version:
+
+https://broadinstitute.github.io/picard/ 
+
 Other dependencies are also bundled (pandas, pyperclip, ttkthemes, biopython and click).
 Tkinter is required and should be installed upon download, but if you get `ModuleNotFoundError: No module named 'tkinter'`, install it manually:
 
