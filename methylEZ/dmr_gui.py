@@ -4,7 +4,7 @@
 import os
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-from methylEZ.dmr_template_generator import export_methylkit_template
+from methylEZ.dmr_template_generator import export_metkit_template
 
 
 class DMRAnalysisGUI(ttk.Frame):
@@ -99,4 +99,4 @@ class DMRAnalysisGUI(ttk.Frame):
             'file_column': self.file_column.get(),
             'id_column': self.id_column.get()
         }
-        export_methylkit_template(config)
+        export_metkit_template(config)
