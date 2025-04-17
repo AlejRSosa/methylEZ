@@ -47,15 +47,15 @@ class MainMenu(ttk.Frame):
 
         #ttk.Label(self, text="Welcome to MethylEZ", font=("Arial", 20)).pack(pady=10)
         ttk.Label(self, text="Select an option to continue:", font=("Arial", 16)).pack(pady=5)
-        ttk.Button(self, text="🧬 Methylseq Preparation",
+        ttk.Button(self, text=" Methylseq Preparation",
                   command=lambda: controller.show_frame(MethylSeqGUI), width=30).pack(pady=5)
-        ttk.Button(self, text="📈 Collect HsMetrics",
+        ttk.Button(self, text=" Collect HsMetrics",
                   command=lambda: controller.show_frame(MainPicardGUI), width=30).pack(pady=5)
-        ttk.Button(self, text="🖥️Downstream Analysis",
+        ttk.Button(self, text="Downstream Analysis",
                   command=lambda: controller.show_frame(DMRAnalysisGUI), width=30).pack(pady=5)
-        ttk.Button(self,text="📊 Visualization",
-                   command=lambda: controller.show_frame(VisualizationGUI),width=30).pack(pady=5)
-        ttk.Button(self, text="❌ Exit", command=controller.destroy, width=30).pack(pady=20)
+        #ttk.Button(self,text=" Visualization",
+        #           command=lambda: controller.show_frame(VisualizationGUI),width=30).pack(pady=5)
+        ttk.Button(self, text=" Exit", command=controller.destroy, width=30).pack(pady=20)
 
 
 """ class DMRAnalysisGUI(ttk.Frame):
@@ -67,14 +67,14 @@ class MainMenu(ttk.Frame):
         ttk.Button(self, text="⬅ Back to Main Menu",
                   command=lambda: controller.show_frame(MainMenu), width=30).pack(pady=10) """
 
-class VisualizationGUI(ttk.Frame):
+""" class VisualizationGUI(ttk.Frame):
     def __init__(self, parent, controller, back_callback=None):
         super().__init__(parent)
         self.controller = controller
         self.back_callback = back_callback
         ttk.Label(self, text="Visualization", font=("Arial", 18)).pack(pady=10)
-        ttk.Button(self, text="⬅ Back to Main Menu",
-                  command=lambda: controller.show_frame(MainMenu), width=30).pack(pady=10)
+        ttk.Button(self, text="<-- Back to Main Menu",
+                  command=lambda: controller.show_frame(MainMenu), width=30).pack(pady=10) """
 
 # The main application class or App is the main window which has one container (tk.Frame) that holds all pages.
 # MainMenu, MethlySeqGUI, HSMetricsGUI, and DMRAnalysisGUI are pages that will be children of the container.
@@ -105,7 +105,7 @@ class App(tk.Tk):
         
         # Instantiate all pages once and store them in a dictionary.
         self.frames = {}
-        for F in (MainMenu, MethylSeqGUI, MainPicardGUI, DMRAnalysisGUI, VisualizationGUI):
+        for F in (MainMenu, MethylSeqGUI, MainPicardGUI, DMRAnalysisGUI): #, VisualizationGUI):
             frame = F(container, self, back_callback=lambda: self.show_frame(MainMenu))
 
             self.frames[F] = frame

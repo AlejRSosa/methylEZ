@@ -11,4 +11,4 @@ class Navigation(ttk.Frame):
         super().__init__(master, *args, **kwargs)
         # If a back_callback is provided, create a back button.
         if back_callback:
-            ttk.Button(self, text="⬅ Back to Main menu", command=back_callback).pack(pady=10)
+            ttk.Button(self, text="<-- Back to Main menu", command=back_callback).pack(pady=10)
