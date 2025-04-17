@@ -1,5 +1,7 @@
 #we need biopython (pip install biopython) and samtools (https://www.htslib.org/download/)
 #we need to install picard tools (https://broadinstitute.github.io/picard/)
+#UPDATE-2025: picard.jar is being bundled in the app. For the tools to run properly, you must have Java 1.8 installed. 
+
 import os
 import subprocess
 import methylEZ

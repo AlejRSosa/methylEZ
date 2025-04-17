@@ -29,7 +29,7 @@ from ttkthemes import ThemedStyle  # import ttkthemes for more aesthetic stuff (
 from methylEZ.gui import MethylSeqGUI  # methylseq preparation
 #from hsmetrics_gui import HSMetricsGUI  # CollectHsMetrics 
 from methylEZ.hsmetrics_main_gui import MainPicardGUI  # CollectHsMetrics GUI
-#from methylEZ.dmr_gui import DMRGUI  # New GUI for downstream analysis (to be implemented)
+from methylEZ.dmr_gui import DMRAnalysisGUI  # methylkit DMR analysis
 
 class MainMenu(ttk.Frame):
     def __init__(self, parent, controller, back_callback=None):
@@ -58,14 +58,14 @@ class MainMenu(ttk.Frame):
         ttk.Button(self, text="❌ Exit", command=controller.destroy, width=30).pack(pady=20)
 
 
-class DMRAnalysisGUI(ttk.Frame):
+""" class DMRAnalysisGUI(ttk.Frame):
     def __init__(self, parent, controller, back_callback=None):
         super().__init__(parent)
         self.controller = controller
         self.back_callback = back_callback
         ttk.Label(self, text="DMR Analysis", font=("Arial", 18)).pack(pady=10)
         ttk.Button(self, text="⬅ Back to Main Menu",
-                  command=lambda: controller.show_frame(MainMenu), width=30).pack(pady=10)
+                  command=lambda: controller.show_frame(MainMenu), width=30).pack(pady=10) """
 
 class VisualizationGUI(ttk.Frame):
     def __init__(self, parent, controller, back_callback=None):

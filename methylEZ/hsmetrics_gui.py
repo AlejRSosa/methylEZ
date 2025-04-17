@@ -2,10 +2,10 @@ import os
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox, filedialog, scrolledtext
-import subprocess
+#import subprocess
 from methylEZ.hsmetrics_command_generator import generate_hsmetrics_command
 #from methylEZ.hsmetrics_runner import run_picard_hsmetrics - not needed anymore cause we are focusing only on template generation
-from methylEZ.utils import copy_command_to_clipboard, select_directory
+#from methylEZ.utils import copy_command_to_clipboard, select_directory
 import methylEZ
 from pathlib import Path
 import methylEZ.hsmetrics_parser as hs_parser  #we will later call hs_parser.parse_picard_output()
@@ -19,7 +19,7 @@ class HSMetricsGUI(ttk.Frame):
 
         # GUI sections
         #self.create_file_selection_frame()
-        # Remove the output directory input here, as it's in the left pane.
+        # Remove the output directory input here, cause it's in the left pane.
         self.create_folder_selection_frame()
         self.create_command_generation_section()
         #self.create_real_time_output_section()
@@ -332,7 +332,6 @@ class HSMetricsGUI(ttk.Frame):
         else:
             messagebox.showinfo("Canceled", "No file selected.")
 
-# Add this method inside your HSMetricsGUI class:
     def export_parse_template(self):
         """
         Exports a self-contained Python template script for parsing Picard output files.
