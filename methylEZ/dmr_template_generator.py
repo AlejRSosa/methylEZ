@@ -8,7 +8,41 @@ def export_metkit_template(self):
         """
         template_code = '''
 # methylKit analysis template
-# Modify the settings in the User Configurable Settings section as needed for your dataset.
+# Created by methylEZ
+# This script is a template for running differential methylation analysis using methylKit.
+# It includes user-configurable settings and example code for reading data, filtering, and analyzing DMRs.
+
+# You can also modify the settings in the User Configurable Settings section as needed for your dataset.
+
+# == 0. Install Required Packages ==
+# If you haven’t already installed the following packages, uncomment and run:
+
+# if (!require("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install(version = "3.21")
+
+# required_pkgs <- c(
+#   "openxlsx",
+#   "methylKit",
+#   "pheatmap",
+#   "ComplexHeatmap",
+#   "TxDb.Hsapiens.UCSC.hg19.knownGene",
+#   "genomation",
+#   "dplyr",
+#   "annotatr",
+#   "matrixStats"
+# )
+
+# installed <- rownames(installed.packages())
+# for (pkg in required_pkgs) {
+#   if (!pkg %in% installed) {
+#     message("Installing ", pkg, " …")
+#     BiocManager::install(pkg, ask = FALSE, update = FALSE)
+#   }
+# }
+# 
+# # Load libraries
+# lapply(required_pkgs, library, character.only = TRUE)
 
 # == 1. User Configurable Settings ==
 # Base directory for your project
