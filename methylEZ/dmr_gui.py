@@ -5,11 +5,13 @@ import os
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from methylEZ.dmr_template_generator import export_metkit_template
+from methylEZ.navigation import Navigation
 
 
-class DMRAnalysisGUI(ttk.Frame):
+
+class DMRAnalysisGUI(Navigation):
     def __init__(self, parent, controller, back_callback=None):
-        super().__init__(parent)
+        super().__init__(parent, back_callback=back_callback)
         self.controller = controller
         self.back_callback = back_callback
 
@@ -71,8 +73,6 @@ class DMRAnalysisGUI(ttk.Frame):
 
         ttk.Button(button_frame, text="Export R Template", command=self.export_template).pack(side="left")
 
-        if self.back_callback:
-            ttk.Button(button_frame, text="Back to Main Menu", command=self.back_callback).pack(side="right")
 
     def _select_base_dir(self):
         directory = filedialog.askdirectory(title="Select Base Directory")
