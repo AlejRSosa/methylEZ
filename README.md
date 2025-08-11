@@ -29,3 +29,16 @@ Tkinter is required and should be installed upon download, but if you get `Modul
 
 🔹 On Windows/macOS: Reinstall Python with the "tcl/tk" option enabled.
 
+## Recommended: Use a Virtual Environment
+
+To avoid dependency conflicts, create and activate a virtual environment before installing methylEZ:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate
+pip install .
+methylEZ
+
+## **Summary**:
+- Always activate your venv before running or installing methylEZ.
+- This keeps all dependencies isolated and avoids downgrading/upgrading packages globally.
