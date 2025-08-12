@@ -1,0 +1,7 @@
+MANIFEST.in
+README.md
+pyproject.toml
+assets.egg-info/PKG-INFO
+assets.egg-info/SOURCES.txt
+assets.egg-info/dependency_links.txt
+assets.egg-info/top_level.txt

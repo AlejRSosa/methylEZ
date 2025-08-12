@@ -3,16 +3,16 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox, filedialog, scrolledtext
 #import subprocess
-from methylEZ.hsmetrics_command_generator import generate_hsmetrics_command
+from .hsmetrics_command_generator import generate_hsmetrics_command
 #from methylEZ.hsmetrics_runner import run_picard_hsmetrics - not needed anymore cause we are focusing only on template generation
 #from methylEZ.utils import copy_command_to_clipboard, select_directory
-import methylEZ
 from pathlib import Path
-import methylEZ.hsmetrics_parser as hs_parser  #we will later call hs_parser.parse_picard_output()
+from . import hsmetrics_parser as hs_parser  # we will later call hs_parser.parse_picard_output()
 
 class HSMetricsGUI(ttk.Frame):
     def __init__(self, parent, controller, output_dir, back_callback=None):
-        super().__init__(parent, back_callback=back_callback)
+    # ttk.Frame doesn't accept back_callback; only pass parent
+        super().__init__(parent)
         self.controller = controller
         self.root = controller
         self.output_dir = output_dir
@@ -185,8 +185,10 @@ class HSMetricsGUI(ttk.Frame):
             title="Select BAM files",
             filetypes=[("BAM files", "*.bam *.cov"), ("All files", "*")]
         )
-        for file in files:
-            self.bam_listbox.insert(tk.END, file)
+        lb = getattr(self, "bam_listbox", None)
+        if lb is not None:
+            for file in files:
+                lb.insert(tk.END, file)
 
     def select_file(self, entry):
         file = filedialog.askopenfilename()
@@ -231,7 +233,7 @@ class HSMetricsGUI(ttk.Frame):
             messagebox.showerror("Error", "No input folder specified for BAM files.")
             return
 
-        picard_jar = Path(methylEZ.__file__).resolve().parent / "assets" / "picard.jar"
+        picard_jar = Path(__file__).resolve().parent / "assets" / "picard.jar"
         ref_genome = "filtered_hg19_ensembl.fa"  # or get from an entry if you allow the user to change it
 
         # Build the code snippet as a multiline string.

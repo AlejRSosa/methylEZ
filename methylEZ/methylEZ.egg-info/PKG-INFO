@@ -1,0 +1,61 @@
+Metadata-Version: 2.4
+Name: methylEZ
+Version: 0.1
+Summary: A GUI for Methylation Sequencing Workflow Preparation
+Author-email: Alejandra Rodriguez-Sosa <your-email@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/AlejRSosa/methylEZ
+Project-URL: Issues, https://github.com/AlejRSosa/methylEZ/issues
+Project-URL: Source, https://github.com/AlejRSosa/methylEZ
+Keywords: methylation,bioinformatics,epigenetics,GUI
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: pandas
+Requires-Dist: pyperclip
+Requires-Dist: ttkthemes
+Requires-Dist: biopython
+Requires-Dist: click
+
+# methylEZ
+
+A GUI for methylation sequencing workflow.
+
+## Install
+
+```powershell
+pip install .
+```
+
+Or directly from GitHub (requires a release with a source distribution):
+
+```powershell
+pip install git+https://github.com/AlejRSosa/methylEZ.git#subdirectory=methylEZ
+```
+
+## Run
+
+Once installed, run:
+
+```powershell
+methylEZ
+```
+
+This launches the GUI.
+
+## Requirements
+- Python 3.9+
+- Java (for Picard jar)
+- samtools (on PATH)
+
+Assets such as `picard.jar` are bundled under `methylEZ/assets/`.

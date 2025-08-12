@@ -3,8 +3,6 @@ import profile
 import tkinter as tk
 import tkinter.ttk as ttk # theme aesthetic widget
 from tkinter import messagebox
-
-from click import option
 from methylEZ.command_generator import generate_samplesheet, generate_command
 from methylEZ.utils import copy_command_to_clipboard, select_directory
 from methylEZ.file_manager import add_files, clear_selected_files, clear_all_files, move_up, move_down

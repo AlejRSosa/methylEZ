@@ -8,7 +8,6 @@ Date: 06-02-2025
 # Each page is instantiated just once, stored in a dictionary and the user navigates them thansks to 
 # tkraise() method, avoiding duplicate widget and loss of efficiency by generation / destroying widgets dynamically.
 
-import tkinter as tk
 from pathlib import Path
 
 #from streamlit import logo
@@ -27,7 +26,7 @@ from tkinter import ttk # import aesthetic ttk module for buttons, labels, etc.
 from ttkthemes import ThemedStyle  # import ttkthemes for more aesthetic stuff (I tried to make it look pretty, don't judge me)
 # Import all GUI classes
 from methylEZ.gui import MethylSeqGUI  # methylseq preparation
-#from hsmetrics_gui import HSMetricsGUI  # CollectHsMetrics 
+# from methylEZ.hsmetrics_gui import HSMetricsGUI  # CollectHsMetrics (unused)
 from methylEZ.hsmetrics_main_gui import MainPicardGUI  # CollectHsMetrics GUI
 from methylEZ.dmr_gui import DMRAnalysisGUI  # methylkit DMR analysis
 

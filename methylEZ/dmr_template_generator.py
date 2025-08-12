@@ -1,12 +1,13 @@
 import os
 from tkinter import filedialog, messagebox
 
-def export_metkit_template(self):
-        """
-        Exports a self-contained R template script for running differential methylation.
-        The template contains inline code (no external dependencies).
-        """
-        template_code = '''
+def export_metkit_template(config):
+  """
+  Exports a self-contained R template script for running differential methylation.
+  The template contains inline code (no external dependencies). Uses token replacement
+  to avoid conflicts with braces in R code.
+  """
+  template_code = '''
 # methylKit analysis template
 # Created by methylEZ
 # This script is a template for running differential methylation analysis using methylKit.
@@ -46,7 +47,7 @@ def export_metkit_template(self):
 
 # == 1. User Configurable Settings ==
 # Base directory for your project
-base_dir <- "{config['base_dir']}"  # <--- MODIFY
+base_dir <- "__BASE_DIR__"  # <--- MODIFY
 
 # Directories for data and results
 data_dir     <- file.path(base_dir, "data")
@@ -58,31 +59,31 @@ samplesheet_path      <- file.path(data_dir, "samplesheet.csv")
 full_samplesheet_path <- file.path(data_dir, "full_samplesheet.csv")
 
 # Path to full genome BED file (for genomation annotation)
-bedfile_path <- "{config['bedfile_path']}"  # <--- MODIFY
+bedfile_path <- "__BEDFILE_PATH__"  # <--- MODIFY
 
 # Genome assembly (e.g., "hg19", "hg38")
-genome_assembly <- "{config['genome_assembly']}"  # <--- MODIFY
+genome_assembly <- "__GENOME_ASSEMBLY__"  # <--- MODIFY
 
 # Thresholds for filtering
-min_coverage <- {config['min_coverage']} # <--- MODIFY
-max_coverage_percentile <- {config['max_coverage_percentile']} # <--- MODIFY
-sd_cutoff <- {config['sd_cutoff']} # <--- MODIFY
+min_coverage <- __MIN_COVERAGE__ # <--- MODIFY
+max_coverage_percentile <- __MAX_COVERAGE_PERCENTILE__ # <--- MODIFY
+sd_cutoff <- __SD_CUTOFF__ # <--- MODIFY
 
 
 # Binning parameters (region-level analysis)
-tile_win_size  <- {config['tile_win_size']} # <--- MODIFY
-tile_step_size <- {config['tile_step_size']} # <--- MODIFY
+tile_win_size  <- __TILE_WIN_SIZE__ # <--- MODIFY
+tile_step_size <- __TILE_STEP_SIZE__ # <--- MODIFY
 
 
 # Sample group recoding: named vector mapping original group names to numeric codes
 # e.g., c("Control"=0, "TreatmentA"=1, "TreatmentB"=2)
 # sample_group_recode <- c("Group1"=0, "Group2"=1, "Group3"=2)  
-sample_group_recode <- {config['sample_group_recode']} # <--- MODIFY
+sample_group_recode <- __SAMPLE_GROUP_RECODE__ # <--- MODIFY
 
 # Column names in your samplesheet
-group_column <- "{config['group_column']}" # <--- MODIFY
-file_column  <- "{config['file_column']}" # <--- MODIFY
-id_column    <- "{config['id_column']}" # <--- MODIFY
+group_column <- "__GROUP_COLUMN__" # <--- MODIFY
+file_column  <- "__FILE_COLUMN__" # <--- MODIFY
+id_column    <- "__ID_COLUMN__" # <--- MODIFY
 
 
 # Create output directory if it doesn't exist
@@ -287,17 +288,38 @@ annotate_and_save(hyper_sites, "hyper_sites")
 #                                    feature = promoters,
 #                                    flank = promoter_flanks)
 # write.csv(anno_g, file = file.path(output_dir, "hyper_sites_genomation_annot.csv"))
+  '''
+  # Prepare replacements with safe defaults
+  replacements = {
+    "__BASE_DIR__": config.get("base_dir", ""),
+    "__BEDFILE_PATH__": config.get("bedfile_path", ""),
+    "__GENOME_ASSEMBLY__": config.get("genome_assembly", "hg19"),
+    "__MIN_COVERAGE__": str(config.get("min_coverage", 10)),
+    "__MAX_COVERAGE_PERCENTILE__": str(config.get("max_coverage_percentile", 99.9)),
+    "__SD_CUTOFF__": str(config.get("sd_cutoff", 2.0)),
+    "__TILE_WIN_SIZE__": str(config.get("tile_win_size", 500)),
+    "__TILE_STEP_SIZE__": str(config.get("tile_step_size", 300)),
+    "__SAMPLE_GROUP_RECODE__": config.get("sample_group_recode", 'c("Group1"=0, "Group2"=1)'),
+    "__GROUP_COLUMN__": config.get("group_column", "Sample_Group"),
+    "__FILE_COLUMN__": config.get("file_column", "file_name"),
+    "__ID_COLUMN__": config.get("id_column", "Sample_ID"),
+  }
 
-    '''
-        # Where to save the file (ask user input)
-        filename = filedialog.asksaveasfilename(title="Save Methylkit Template", defaultextension=".R",
-                                                initialfile="methylkit_template.R")
-        if filename:
-            try:
-                with open(filename, "w") as f:
-                    f.write(template_code)
-                messagebox.showinfo("Success", f"Template exported to:\n{filename}")
-            except Exception as e:
-                messagebox.showerror("Error", f"Error writing file: {e}")
-        else:
-            messagebox.showinfo("Canceled", "No file selected.")
+  for key, value in replacements.items():
+    template_code = template_code.replace(key, value)
+  # Where to save the file (ask user input)
+  filename = filedialog.asksaveasfilename(
+    title="Save Methylkit Template",
+    defaultextension=".R",
+    initialdir=os.getcwd(),
+    initialfile="methylkit_template.R",
+  )
+  if filename:
+    try:
+      with open(filename, "w") as f:
+        f.write(template_code)
+      messagebox.showinfo("Success", f"Template exported to:\n{filename}")
+    except Exception as e:
+      messagebox.showerror("Error", f"Error writing file: {e}")
+  else:
+    messagebox.showinfo("Canceled", "No file selected.")

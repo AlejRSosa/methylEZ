@@ -1,12 +1,13 @@
 import tkinter as tk
+from tkinter import filedialog, messagebox
 
 def add_files(self):
     filetypes = (("FASTQ files", "*.fastq *.fastq.gz *.fq *.fq.gz"), ("All files", "*.*"))
-    new_files = tk.filedialog.askopenfilenames(title="Select FASTQ files", filetypes=filetypes)
+    new_files = filedialog.askopenfilenames(title="Select FASTQ files", filetypes=filetypes)
     
     duplicate_files = [file for file in new_files if file in self.file_paths]
     if duplicate_files:
-        tk.messagebox.showerror("Error", "These files are already added: \n" + "\n".join(duplicate_files))
+        messagebox.showerror("Error", "These files are already added: \n" + "\n".join(duplicate_files))
         return
 
     self.file_paths.extend(new_files)
@@ -39,16 +40,36 @@ def move_up(self):
         self.file_listbox.delete(index)
         self.file_listbox.insert(index - 1, file_path)
         self.file_listbox.select_set(index - 1)
+        # keep underlying list in sync
+        try:
+            idx_in_list = self.file_paths.index(file_path)
+            if idx_in_list > 0:
+                self.file_paths[idx_in_list - 1], self.file_paths[idx_in_list] = (
+                    self.file_paths[idx_in_list],
+                    self.file_paths[idx_in_list - 1],
+                )
+        except ValueError:
+            pass
 
 def move_down(self):
     selected_indices = list(self.file_listbox.curselection())
     for index in reversed(selected_indices):
-        if index == len(self.file_paths) - 1:
+        if index == self.file_listbox.size() - 1:
             continue
         file_path = self.file_listbox.get(index)
         self.file_listbox.delete(index)
         self.file_listbox.insert(index + 1, file_path)
         self.file_listbox.select_set(index + 1)
+        # keep underlying list in sync
+        try:
+            idx_in_list = self.file_paths.index(file_path)
+            if idx_in_list < len(self.file_paths) - 1:
+                self.file_paths[idx_in_list + 1], self.file_paths[idx_in_list] = (
+                    self.file_paths[idx_in_list],
+                    self.file_paths[idx_in_list + 1],
+                )
+        except ValueError:
+            pass
 
 def mark_files(self, mark_type):
     """Mark files as single-end, paired-end, or neutral."""

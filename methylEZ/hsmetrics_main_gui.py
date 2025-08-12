@@ -1,9 +1,9 @@
 import os
 import tkinter as tk
 from tkinter import ttk
-from methylEZ.hsmetrics_gui import HSMetricsGUI
-from methylEZ.hsmetrics_preparation import PicardPreparationFrame
-from methylEZ.navigation import Navigation
+from .hsmetrics_gui import HSMetricsGUI
+from .hsmetrics_preparation import PicardPreparationFrame
+from .navigation import Navigation
 
 class MainPicardGUI(Navigation):
     def __init__(self, parent, controller, back_callback=None):

@@ -4,10 +4,9 @@
 
 import os
 import subprocess
-import methylEZ
+from pathlib import Path
 from Bio import SeqIO
 import tkinter as tk
-from pathlib import Path
 from tkinter import ttk, filedialog, messagebox
 
 # helper functions
@@ -168,12 +167,12 @@ class PicardPreparationFrame(ttk.Frame):
         if not fasta:
             messagebox.showerror("Error", "Please select (or generate) a sorted FASTA file.")
             return
-        dict_file = os.path.splitext(fasta)[0] + ".dict"
-        #picard_jar_path = os.path.join(os.getcwd(), "lib", "picard.jar")
-        picard_jar_path = Path(methylEZ.__file__).resolve().parent / "bin" / "picard.jar"
-        cmd = f'java -jar "{picard_jar_path}" CreateSequenceDictionary R="{fasta}" O="{dict_file}"'
-        self.log("Creating sequence dictionary...")
         try:
+            dict_file = os.path.splitext(fasta)[0] + ".dict"
+            #picard_jar_path = os.path.join(os.getcwd(), "lib", "picard.jar")
+            picard_jar_path = Path(__file__).resolve().parent / "assets" / "picard.jar"
+            cmd = f'java -jar "{picard_jar_path}" CreateSequenceDictionary R="{fasta}" O="{dict_file}"'
+            self.log("Creating sequence dictionary...")
             subprocess.run(cmd, shell=True, check=True)
             self.log("Sequence dictionary created: " + dict_file)
         except subprocess.CalledProcessError as e:
@@ -242,7 +241,7 @@ class PicardPreparationFrame(ttk.Frame):
         output_file = os.path.join(output_dir, os.path.basename(bed).replace(".bed", ".interval_list"))
         # HERE YOU MUST REPLACE 'cp' command with the actual method!!!
         #picard_jar_path = os.path.join(os.getcwd(), "lib", "picard.jar")
-        picard_jar_path=Path(methylEZ.__file__).resolve().parent / "bin" / "picard.jar"
+        picard_jar_path = Path(__file__).resolve().parent / "assets" / "picard.jar"
         cmd = f'java -jar "{picard_jar_path}" BedToIntervalList -I "{bed}" -O "{output_file}" -SD "{dict_file}"'
         self.log("Generating interval list from BED file...")
         try:
@@ -264,7 +263,7 @@ class PicardPreparationFrame(ttk.Frame):
                 messagebox.showerror("Error", "No FASTA file selected.")
                 return
             sorted_fasta = os.path.join(os.path.dirname(fasta), "sorted_" + os.path.basename(fasta))
-            picard_jar_path = Path(methylEZ.__file__).resolve().parent / "bin" / "picard.jar"
+            picard_jar_path = Path(__file__).resolve().parent / "assets" / "picard.jar"
             # picard_jar_path = os.path.join(os.getcwd(), "lib", "picard.jar")
             dict_file = os.path.splitext(sorted_fasta)[0] + ".dict"
             
@@ -401,7 +400,7 @@ class PicardPreparationFrame(ttk.Frame):
         '''
             commands.append(prep_code)
             commands.append(f'samtools faidx "{sorted_fasta}"')
-            picard_jar_path = os.path.join(os.getcwd(), "lib", "picard.jar")
+            picard_jar_path = str(Path(__file__).resolve().parent / "assets" / "picard.jar")
             dict_file = os.path.splitext(sorted_fasta)[0] + ".dict"
             commands.append(f'java -jar "{picard_jar_path}" CreateSequenceDictionary R="{sorted_fasta}" O="{dict_file}"')
         if bam:

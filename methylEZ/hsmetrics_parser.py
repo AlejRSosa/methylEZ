@@ -19,7 +19,9 @@ def parse_picard_output(directory, output_csv):
 
     header_written = False
     for file in files:
-        sample_id = os.path.basename(file).replace("*_hs_metrics.txt", "")
+        base = os.path.basename(file)
+        # Remove the known suffix to get a sample ID
+        sample_id = base[:-len("_hs_metrics.txt")] if base.endswith("_hs_metrics.txt") else os.path.splitext(base)[0]
         with open(file, "r") as f:
             lines = f.readlines()
         try:

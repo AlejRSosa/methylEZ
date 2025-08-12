@@ -1,0 +1,59 @@
+Metadata-Version: 2.4
+Name: methylEZ
+Version: 0.1
+Summary: A GUI for Methylation Sequencing Workflow Preparation
+Author-email: Alejandra Rodriguez-Sosa <your-email@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/AlejRSosa/methylEZ
+Project-URL: Issues, https://github.com/AlejRSosa/methylEZ/issues
+Project-URL: Source, https://github.com/AlejRSosa/methylEZ
+Keywords: methylation,bioinformatics,epigenetics,GUI
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pandas
+Requires-Dist: pyperclip
+Requires-Dist: ttkthemes
+Requires-Dist: biopython
+Requires-Dist: click
+Dynamic: license-file
+
+# methylEZ
+"A user-friendly GUI to streamline the preparation of whole-genome bisulfite sequencing (WBGS) and reduced representation bisulfite sequencing (RRBS) workflows. Its hybrid approach consist of generating command-line templates that can be either used directly or modified by the users at their convenience."
+
+methylEZ bundles Picard Tools (MIT License), developed by the Broad Institute.
+
+## Installation Instructions (Linux, macOS, Windows)
+
+Open your terminal (or PowerShell on Windows) and run:
+
+1.Install the package directly from GitHub: 
+pip install git+https://github.com/AlejRSosa/methylEZ.git
+
+2.Launch the application:
+methylEZ
+
+## Dependencies
+methylEZ bundles Picard.jar (MIT licensed). You do not need to download Picard separately.
+Other dependencies are also bundled (pandas, pyperclip, ttkthemes, biopython and click).
+Tkinter is required and should be installed upon download, but if you get `ModuleNotFoundError: No module named 'tkinter'`, install it manually:
+
+🔹 On Ubuntu/Debian: sudo apt install python3-tk
+
+🔹 On Fedora: sudo dnf install python3-tkinter
+
+🔹 On Arch Linux: sudo pacman -S tk
+
+🔹 On Windows/macOS: Reinstall Python with the "tcl/tk" option enabled.
+
