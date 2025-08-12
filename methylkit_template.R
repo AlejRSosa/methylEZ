@@ -7,8 +7,7 @@
 # You can also modify the settings in the User Configurable Settings section as needed for your dataset.
 
 # == 0. Install Required Packages ==
-# If you haven’t already installed the following packages, uncomment and run:
-
+# If you haven't already installed the following packages, uncomment and run:
 # if (!require("BiocManager", quietly = TRUE))
 #   install.packages("BiocManager")
 # BiocManager::install(version = "3.21")
@@ -28,9 +27,8 @@
 # installed <- rownames(installed.packages())
 # for (pkg in required_pkgs) {
 #   if (!pkg %in% installed) {
-#     message("Installing ", pkg, " …")
-#     BiocManager::install(pkg, ask = FALSE, update = FALSE)
-#   }
+#     message("Installing ", pkg, " ï¿½")
+#     message("Installing ", pkg, " ...")#   }
 # }
 # 
 # # Load libraries
