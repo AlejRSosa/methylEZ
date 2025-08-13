@@ -191,8 +191,7 @@ class HSMetricsGUI(ttk.Frame):
         command = self.command_text.get("1.0", tk.END).strip()
         if not command:
             messagebox.showerror("Error", "No command generated. Please generate it first.")
-            return
-
+        output_dir = self.output_dir if hasattr(self, "output_dir") else os.getcwd()
         self.output_text.config(state=tk.NORMAL)
         self.output_text.delete("1.0", tk.END)
         self.output_text.insert(tk.END, "Running Picard CollectHsMetrics...\n")
@@ -213,7 +212,8 @@ class HSMetricsGUI(ttk.Frame):
  """
     def export_run_code(self):
         # Get common parameters from the entries:
-        output_dir = self.output_dir if hasattr(self, "output_dir") else os.getcwd()        target_intervals = self.target_entry.get()
+        output_dir = self.output_dir if hasattr(self, "output_dir") else os.getcwd()        
+        target_intervals = self.target_entry.get()
         bait_intervals = self.bait_entry.get()
         dict_file = self.dict_entry.get()
         
