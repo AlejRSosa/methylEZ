@@ -1,6 +1,6 @@
 import tkinter as tk
 import pyperclip
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 
 def copy_command_to_clipboard(self):
     """Copy the generated command to the clipboard."""
@@ -9,9 +9,9 @@ def copy_command_to_clipboard(self):
         if not command:
             raise ValueError("The command text is empty. Please generate a command first.")
         pyperclip.copy(command)
-        tk.messagebox.showinfo("Copied", "Command copied to clipboard.")
+        messagebox.showinfo("Copied", "Command copied to clipboard.")
     except Exception as e:
-        tk.messagebox.showerror("Error", f"An error occurred while copying the command: {e}")
+        messagebox.showerror("Error", f"An error occurred while copying the command: {e}")
 
 def select_directory(self):
     """Open a directory selection dialog and set the output directory."""
@@ -20,6 +20,6 @@ def select_directory(self):
         if directory:
             self.output_dir.set(directory)
         else:
-            tk.messagebox.showwarning("No Selection", "No directory was selected.")
+            messagebox.showwarning("No Selection", "No directory was selected.")
     except Exception as e:
-        tk.messagebox.showerror("Error", f"An error occurred while selecting a directory: {e}")
+        messagebox.showerror("Error", f"An error occurred while selecting a directory: {e}")

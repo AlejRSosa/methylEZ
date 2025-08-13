@@ -11,10 +11,16 @@ import pandas as pd
 def generate_samplesheet(self):
     try:
         output_dir = self.output_dir.get()
-        if not output_dir or not os.path.isdir(output_dir):
-            messagebox.showerror("Error", "Please select a valid output directory.")
+        if not output_dir:
+            messagebox.showerror("Error", "Please specify an output directory.")
             return
 
+        # Create directory if it doesn't exist
+        try:
+            os.makedirs(output_dir, exist_ok=True)
+        except OSError as e:
+            messagebox.showerror("Error", f"Cannot create output directory: {e}")
+            return
         samplesheet_path = os.path.join(output_dir, self.samplesheet_name.get())        
         if os.path.exists(samplesheet_path):
             if not messagebox.askyesno("Confirmation", f"Samplesheet {samplesheet_path} already exists. Overwrite?"):
@@ -57,13 +63,21 @@ def generate_samplesheet(self):
         )
         for sample_name, files in paired_files.items():
             if len(files) == 2:
-                data.append([sample_name, files[0], files[1]])
+                # Sort files to ensure R1 comes before R2
+                sorted_files = sorted(files)
+                # Check if files follow R1/R2 naming convention
+                if '_R1' in sorted_files[0] and '_R2' in sorted_files[1]:
+                    data.append([sample_name, sorted_files[0], sorted_files[1]])
+                elif '_R2' in sorted_files[0] and '_R1' in sorted_files[1]:
+                    data.append([sample_name, sorted_files[1], sorted_files[0]])
+                else:
+                    # Default to lexicographic order if R1/R2 pattern not found
+                    data.append([sample_name, sorted_files[0], sorted_files[1]])
             else:
                 messagebox.showwarning(
                     "Warning",
                     f"Sample {sample_name} has {len(files)} paired files, expected 2"
                 )
-
         if not data:
             messagebox.showerror("Error", "No files selected or marked.")
             return
@@ -77,9 +91,12 @@ def generate_samplesheet(self):
 
         messagebox.showinfo("Success", f"Samplesheet saved at {samplesheet_path}")
     except Exception as e:
-        messagebox.showerror("Error", f"An unexpected error occurred while generating the samplesheet: {e}")
-
-def generate_command(self):
+        import shlex
+        # Ensure samplesheet_path is defined even if an error occurs earlier
+        samplesheet_path = os.path.join(self.output_dir.get(), self.samplesheet_name.get())
+        command = (f"nextflow run nf-core/methylseq --input {shlex.quote(samplesheet_path)} "
+                   f"--outdir {shlex.quote(self.output_dir.get())} --genome {self.genome.get()} "
+                   f"--aligner {self.aligner.get()} --profile {self.profile.get()}")    
     try:
         samplesheet_path = os.path.join(self.output_dir.get(), self.samplesheet_name.get())
         if not os.path.exists(samplesheet_path):

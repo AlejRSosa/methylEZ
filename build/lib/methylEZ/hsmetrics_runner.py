@@ -1,6 +1,7 @@
 ##UPDATE: april 2025 - removed the functionality of hsmetrics_runner altogether from the hsmetrics_gui to focus on template generation
 
 import subprocess
+import shlex
 import tkinter as tk
 from tkinter import messagebox
 
@@ -11,6 +12,10 @@ def run_picard_hsmetrics(self):
         messagebox.showerror("Error", "No command generated. Please generate it first.")
         return
 
+    # Validate that commands only contain expected Picard commands
+    if not self._validate_picard_command(command):
+        messagebox.showerror("Error", "Invalid command detected. Only Picard commands are allowed.")
+        return
     commands= command.splitlines()
 
     self.output_text.config(state=tk.NORMAL)
@@ -26,16 +31,14 @@ def run_picard_hsmetrics(self):
         
         # Run the current command, merge stderr into stdout to avoid blocking if stderr fills
         process = subprocess.Popen(
-            cmd,
-            shell=True,
+            shlex.split(cmd),
+            shell=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
-            bufsize=1,
             encoding="utf-8",
             errors="replace",
         )
-
         # Stream output line-by-line (stdout can be Optional for type checkers)
         if process.stdout:
             for line in process.stdout:
@@ -56,4 +59,5 @@ def run_picard_hsmetrics(self):
     messagebox.showinfo("Completed", "Picard CollectHsMetrics has finished running.")
     self.output_text.config(state=tk.NORMAL)
     self.output_text.insert(tk.END, "\nProcess finalised.\n")
+    self.output_text.config(state=tk.DISABLED)    
     self.output_text.config(state=tk.DISABLED)

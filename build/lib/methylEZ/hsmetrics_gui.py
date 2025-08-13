@@ -180,15 +180,6 @@ class HSMetricsGUI(ttk.Frame):
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred while updating the status bar: {e}")
 
-    def add_bam_files(self):
-        files = filedialog.askopenfilenames(
-            title="Select BAM files",
-            filetypes=[("BAM files", "*.bam *.cov"), ("All files", "*")]
-        )
-        lb = getattr(self, "bam_listbox", None)
-        if lb is not None:
-            for file in files:
-                lb.insert(tk.END, file)
 
     def select_file(self, entry):
         file = filedialog.askopenfilename()
@@ -222,8 +213,7 @@ class HSMetricsGUI(ttk.Frame):
  """
     def export_run_code(self):
         # Get common parameters from the entries:
-        output_dir = self.output_dir.get() if hasattr(self, "output_dir") else os.getcwd()
-        target_intervals = self.target_entry.get()
+        output_dir = self.output_dir if hasattr(self, "output_dir") else os.getcwd()        target_intervals = self.target_entry.get()
         bait_intervals = self.bait_entry.get()
         dict_file = self.dict_entry.get()
         

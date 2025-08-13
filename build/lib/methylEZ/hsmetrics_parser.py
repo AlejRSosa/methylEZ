@@ -22,11 +22,11 @@ def parse_picard_output(directory, output_csv):
         base = os.path.basename(file)
         # Remove the known suffix to get a sample ID
         sample_id = base[:-len("_hs_metrics.txt")] if base.endswith("_hs_metrics.txt") else os.path.splitext(base)[0]
-        with open(file, "r") as f:
+        with open(file, "r", encoding="utf-8") as f:
             lines = f.readlines()
         try:
             start_idx = next(i for i, line in enumerate(lines) if "## METRICS CLASS" in line) + 1
-            end_idx = next(i for i, line in enumerate(lines) if "## HISTOGRAM" in line)
+            end_idx = next(i for i, line in enumerate(lines[start_idx:], start_idx) if "## HISTOGRAM" in line)
             metrics = lines[start_idx:end_idx]
             if not metrics or len(metrics) < 2:
                 print(f"Skipping file {file}: Not enough data.")
@@ -47,11 +47,17 @@ def parse_picard_output(directory, output_csv):
                     continue
                 # Prepend sample identifier and append the line.
                 all_lines.append(f"{sample_id}\t{clean_line}")
-        except StopIteration:
-            print(f"Skipping file {file}: Incorrect format.")
+        except StopIteration as e:
+            print(f"Skipping file {file}: Missing required markers (## METRICS CLASS or ## HISTOGRAM).")
             continue
-
     # Write all_lines to the output CSV (tab-separated)
     with open(output_csv, "w") as f:
         f.write("\n".join(all_lines))
+    # Write all_lines to the output CSV (tab-separated)
+    try:
+        with open(output_csv, "w", encoding="utf-8") as f:
+            f.write("\n".join(all_lines))
+    except IOError as e:
+        print(f"Error writing to {output_csv}: {e}")
+        return        f.write("\n".join(all_lines))
     print(f"Parsed data saved to {output_csv}")

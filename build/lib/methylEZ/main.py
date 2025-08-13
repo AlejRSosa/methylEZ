@@ -37,11 +37,18 @@ class MainMenu(ttk.Frame):
         self.back_callback = back_callback
 
         #Calling the logo from assets
+        # Calling the logo from assets
         current_dir = Path(__file__).resolve().parent
-        logo_path=current_dir / "assets" / "METHYLEZ_LOGO3.png"
+        logo_path = current_dir / "assets" / "METHYLEZ_LOGO3.png"
 
-        self.logo = tk.PhotoImage(file=str(logo_path)).subsample(2,2)
-        logo_label = ttk.Label(self, image=self.logo)
+        try:
+            self.logo = tk.PhotoImage(file=str(logo_path)).subsample(2,2)
+            logo_label = ttk.Label(self, image=self.logo)
+            logo_label.pack(pady=10)
+        except tk.TclError:
+            # Fallback to text label if logo not found
+            ttk.Label(self, text="MethylEZ", font=("Arial", 24, "bold")).pack(pady=10)        
+            logo_label = ttk.Label(self, image=self.logo)
         logo_label.pack(pady=10)
 
         #ttk.Label(self, text="Welcome to MethylEZ", font=("Arial", 20)).pack(pady=10)
