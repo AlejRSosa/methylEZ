@@ -1,0 +1,5 @@
+pandas
+pyperclip
+ttkthemes
+biopython
+click
