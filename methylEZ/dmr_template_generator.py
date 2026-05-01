@@ -155,20 +155,20 @@ normalized_obj <- normalizeCoverage(filtered_obj)
 meth_united <- methylKit::unite(normalized_obj, destrand = FALSE) # destrand = TRUE to merge strands
 meth_data    <- getData(meth_united)
 
-# == 8. Outlier Filtering by Standard Deviation ==
+# == 8. (Optional) Outlier Filtering by Standard Deviation ==
 # Calculate per-CpG methylation percentages and their SD
-pm  <- percMethylation(meth_united)
-sds <- matrixStats::rowSds(pm)
+#pm  <- percMethylation(meth_united)
+#sds <- matrixStats::rowSds(pm)
 
-pdf(file.path(output_dir, "sd_distribution.pdf"))
-hist(sds, breaks = 100,
-     main = "SD of Methylation Percentages",
-     xlab = "Standard Deviation")
-dev.off()
+#pdf(file.path(output_dir, "sd_distribution.pdf"))
+#hist(sds, breaks = 100,
+#     main = "SD of Methylation Percentages",
+#     xlab = "Standard Deviation")
+#dev.off()
 
 # Filter out CpGs with low variability
-meth_filtered <- meth_united[sds > sd_cutoff]
-
+#meth_filtered <- meth_united[sds > sd_cutoff]
+meth_filtered <- meth_united # Use this if you want to skip SD filtering
 # == 9. Exploratory Data Analysis ==
 # Correlation scatterplot
 pdf(file.path(output_dir, "correlation_scatter.pdf"))
