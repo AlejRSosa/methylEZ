@@ -4,7 +4,7 @@ from tkinter import filedialog, messagebox
 def export_metkit_template(config):
   """
   Exports a self-contained R template script for running differential methylation.
-  The template contains code including external dependencies that need to be downloaded. Uses token replacement
+  The template contains inline code (no external dependencies). Uses token replacement
   to avoid conflicts with braces in R code.
   """
   template_code = '''
@@ -15,7 +15,37 @@ def export_metkit_template(config):
 
 # You can also modify the settings in the User Configurable Settings section as needed for your dataset.
 
-# == 0. User Configurable Settings ==
+# == 0. Install Required Packages ==
+# If you haven’t already installed the following packages, uncomment and run:
+
+# if (!require("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install(version = "3.21")
+
+# required_pkgs <- c(
+#   "openxlsx",
+#   "methylKit",
+#   "pheatmap",
+#   "ComplexHeatmap",
+#   "TxDb.Hsapiens.UCSC.hg19.knownGene",
+#   "genomation",
+#   "dplyr",
+#   "annotatr",
+#   "matrixStats"
+# )
+
+# installed <- rownames(installed.packages())
+# for (pkg in required_pkgs) {
+#   if (!pkg %in% installed) {
+#     message("Installing ", pkg, " …")
+#     BiocManager::install(pkg, ask = FALSE, update = FALSE)
+#   }
+# }
+# 
+# # Load libraries
+# lapply(required_pkgs, library, character.only = TRUE)
+
+# == 1. User Configurable Settings ==
 # Base directory for your project
 base_dir <- "__BASE_DIR__"  # <--- MODIFY
 
@@ -59,44 +89,6 @@ id_column    <- "__ID_COLUMN__" # <--- MODIFY
 # Create output directory if it doesn't exist
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
-# == 1. Install Required Packages ==
-# If you haven’t already installed the following packages, uncomment and run:
-
-# if (!require("BiocManager", quietly = TRUE))
-#   install.packages("BiocManager")
-
-# required_pkgs <- c(
-#   "openxlsx",
-#   "methylKit",
-#   "pheatmap",
-#   "ComplexHeatmap",
-#   "genomation",
-#   "dplyr",
-#   "annotatr",
-#   "matrixStats"
-# )
-
-# installed <- rownames(installed.packages())
-# for (pkg in required_pkgs) {
-#   if (!pkg %in% installed) {
-#     message("Installing ", pkg, " …")
-#     BiocManager::install(pkg, ask = FALSE, update = FALSE)
-#   }
-# }
-
-#  txdb_pkg <- paste0(
-#   "TxDb.Hsapiens.UCSC.",
-#   genome_assembly,
-#   ".knownGene"
-# )
-
-# if (!require(txdb_pkg, character.only = TRUE)) {
-#   stop("Required TxDb package not installed: ", txdb_pkg)
-# }
-
-# # Load libraries
-# lapply(required_pkgs, library, character.only = TRUE)
-
 # == 2. Load Required Libraries ==
 library(openxlsx)
 library(methylKit)
@@ -122,8 +114,8 @@ treatment    <- samples_df$treatment
 
 # == 4. Read Methylation Coverage Files ==
 # Reads bismarkCoverage pipeline outputs (.cov or .cov.gz)
-meth_obj <- methRead(location     = as.list(sample_files),
-                     sample.id    = as.list(sample_ids),
+meth_obj <- methRead(location     = sample_files,
+                     sample.id    = sample_ids,
                      assembly     = genome_assembly,
                      treatment    = treatment,
                      pipeline     = "bismarkCoverage",
@@ -152,7 +144,7 @@ normalized_obj <- normalizeCoverage(filtered_obj)
 
 # == 7. Unite Samples ==
 # Combine all samples into one object at base-pair resolution
-meth_united <- methylKit::unite(normalized_obj, destrand = FALSE) # destrand = TRUE to merge strands
+meth_united <- methylKit::unite(normalized_obj, destrand = FALSE)
 meth_data    <- getData(meth_united)
 
 # == 8. Outlier Filtering by Standard Deviation ==
@@ -169,7 +161,23 @@ dev.off()
 # Filter out CpGs with low variability
 meth_filtered <- meth_united[sds > sd_cutoff]
 
-# == 9. Exploratory Data Analysis ==
+# == 9. (Optional) Include Covariates ==
+# methylKit supports covariates in differential methylation analysis.
+# Uncomment the following if you have batch effects, sex, age, or other confounding variables:
+# 
+# covariates_df <- data.frame(
+#   Sample = sample_ids,
+#   Batch = c(1, 1, 2, 2, ...),     # Example batch variable
+#   Sex = c("M", "F", "M", "F", ...) # Example sex variable
+# )
+# 
+# meth_filtered@samples <- merge(meth_filtered@samples, covariates_df, by.x = "sample.id", by.y = "Sample")
+# 
+# # Pass covariates to calculateDiffMeth() via the 'covariates' parameter (if using advanced formula interface)
+# # Note: Standard calculateDiffMeth() uses treatment group. For advanced covariate modeling,
+# # consider using glm() or other statistical packages (e.g., limma, DESeq2 for methylation data).
+
+# == 10. Exploratory Data Analysis ==
 # Correlation scatterplot
 pdf(file.path(output_dir, "correlation_scatter.pdf"))
 getCorrelation(meth_filtered, plot = TRUE)
@@ -185,77 +193,112 @@ pdf(file.path(output_dir, "PCA_plot.pdf"))
 methylKit::PCASamples(meth_filtered)
 dev.off()
 
-# == 10. Differential Methylation at Base Level ==
-# For two-group comparison: omit 'groups' argument
-# For multi-group comparison: define 'groups_vec' according to recoded treatments
-# Example for multi-group:
-# groups_vec <- unique(treatment)
-# myDiff <- calculateDiffMeth(meth_filtered, groups = groups_vec, adjust = "BH")
-myDiff <- calculateDiffMeth(meth_filtered, adjust = "BH")
-
-# Volcano plot of differential methylation
-pdf(file.path(output_dir, "volcano_plot.pdf"))
-with(getData(myDiff), {
-  plot(meth.diff, -log10(qvalue),
-       pch = 16, cex = 0.8,
-       main = "Volcano Plot",
-       xlab = "Methylation Difference (%)",
-       ylab = "-log10(q-value)")
-  abline(v = 0, col = "red", lty = 2)
-})
-dev.off()
-
-# Chromosome-level summary
-pdf(file.path(output_dir, "diffMeth_per_chromosome.pdf"))
-diffMethPerChr(myDiff)
-dev.off()
-
-# Export hyper- and hypo-methylated sites
-hyper_sites <- getMethylDiff(myDiff, difference = 25, qvalue = 0.01, type = "hyper")
-hypo_sites  <- getMethylDiff(myDiff, difference = 25, qvalue = 0.01, type = "hypo")
-write.csv(getData(hyper_sites),
-          file = file.path(output_dir, "hyper_methylated_sites.csv"),
-          row.names = FALSE)
-write.csv(getData(hypo_sites),
-          file = file.path(output_dir, "hypo_methylated_sites.csv"),
-          row.names = FALSE)
-
-# == 11. Differential Methylation at Region Level (Bins) ==
-# Define comparisons: named list with code pairs
-comparisons <- list(
-  Comparison1 = c(0, 1),
-  Comparison2 = c(0, 2)
-  # Add more as needed
+# == 11. Differential Methylation at Base Level (Pairwise Comparisons) ==
+# IMPORTANT: calculateDiffMeth() is fundamentally a TWO-GROUP test (logistic regression / Fisher's exact).
+# For multi-group studies, perform pairwise comparisons between groups.
+# Each comparison produces: meth.diff (methylation difference %), pvalue, qvalue.
+#
+# Define your pairwise comparisons: named list with treatment code pairs
+comparisons_base <- list(
+  Comparison1 = c(0, 1),  # Compare treatment 0 vs treatment 1
+  Comparison2 = c(0, 2),  # Compare treatment 0 vs treatment 2 (if applicable)
+  Comparison3 = c(1, 2)   # Compare treatment 1 vs treatment 2 (if applicable)
+  # Add/remove comparisons as needed
 )
 
-region_results <- lapply(names(comparisons), function(comp_name) {
-  groups <- comparisons[[comp_name]]
+base_level_results <- lapply(names(comparisons_base), function(comp_name) {
+  groups <- comparisons_base[[comp_name]]
+  # Subset samples for this comparison
   sel_ids <- sample_ids[treatment %in% groups]
   sel_tr  <- treatment[treatment %in% groups]
+  # Reorganize methylation object with selected samples
   meth_sub <- reorganize(meth_filtered,
                         sample.ids = as.character(sel_ids),
                         treatment  = sel_tr)
+  # Calculate differential methylation for this pair
+  myDiff <- calculateDiffMeth(meth_sub, adjust = "BH")
+  # Extract results
+  df <- getData(myDiff)
+  df$Comparison <- comp_name
+  df$Group_A <- groups[1]
+  df$Group_B <- groups[2]
+  return(df)
+})
+
+base_df <- do.call(rbind, base_level_results)
+write.csv(base_df,
+          file = file.path(output_dir, "base_level_DMRs_pairwise.csv"),
+          row.names = FALSE)
+
+# Example: Extract and save significant hyper/hypo-methylated sites from first comparison
+if (length(base_level_results) > 0) {
+  first_comp <- base_level_results[[1]]
+  hyper_sites <- first_comp[first_comp$meth.diff > 25 & first_comp$qvalue < 0.01, ]
+  hypo_sites  <- first_comp[first_comp$meth.diff < -25 & first_comp$qvalue < 0.01, ]
+  write.csv(hyper_sites,
+            file = file.path(output_dir, "hyper_methylated_sites_pairwise.csv"),
+            row.names = FALSE)
+  write.csv(hypo_sites,
+            file = file.path(output_dir, "hypo_methylated_sites_pairwise.csv"),
+            row.names = FALSE)
+  
+  # Volcano plot for first comparison
+  pdf(file.path(output_dir, "volcano_plot_pairwise.pdf"))
+  with(first_comp, {
+    plot(meth.diff, -log10(qvalue),
+         pch = 16, cex = 0.8,
+         main = paste("Volcano Plot:", names(comparisons_base)[1]),
+         xlab = "Methylation Difference (%)",
+         ylab = "-log10(q-value)")
+    abline(v = 0, col = "red", lty = 2)
+  })
+  dev.off()
+}
+
+# == 12. Differential Methylation at Region Level (Pairwise Comparisons) ==
+# Perform pairwise comparisons at the REGION level (binned/tiled methylation).
+# Same as base-level but with tile aggregation.
+# Define comparisons: named list with treatment code pairs
+comparisons_region <- list(
+  Comparison1 = c(0, 1),  # Compare treatment 0 vs treatment 1
+  Comparison2 = c(0, 2),  # Compare treatment 0 vs treatment 2 (if applicable)
+  Comparison3 = c(1, 2)   # Compare treatment 1 vs treatment 2 (if applicable)
+  # Add/remove comparisons as needed
+)
+
+region_results <- lapply(names(comparisons_region), function(comp_name) {
+  groups <- comparisons_region[[comp_name]]
+  # Subset samples for this comparison
+  sel_ids <- sample_ids[treatment %in% groups]
+  sel_tr  <- treatment[treatment %in% groups]
+  # Reorganize methylation object with selected samples
+  meth_sub <- reorganize(meth_filtered,
+                        sample.ids = as.character(sel_ids),
+                        treatment  = sel_tr)
+  # Tile counts
   tiles <- tileMethylCounts(meth_sub,
                             win.size   = tile_win_size,
                             step.size  = tile_step_size,
                             cov.bases  = 1)
-  dmr   <- calculateDiffMeth(tiles)
+  # Calculate differential methylation for this pair
+  dmr   <- calculateDiffMeth(tiles, adjust = "BH")
   df    <- getData(dmr)
   df$Comparison <- comp_name
+  df$Group_A <- groups[1]
+  df$Group_B <- groups[2]
   return(df)
 })
 
 region_df <- do.call(rbind, region_results)
 write.csv(region_df,
-          file = file.path(output_dir, "region_level_DMRs.csv"),
+          file = file.path(output_dir, "region_level_DMRs_pairwise.csv"),
           row.names = FALSE)
 
-# == 12. Annotation with annotatr ==
+# == 13. Annotation with annotatr ==
 # Build annotations
 annots_cpg       <- c(paste0(genome_assembly, "_cpgs"), paste0(genome_assembly, "_genes_intergenic"))
-annots_promoters <- build_annotations(genome = genome_assembly, annotations = paste0(genome_assembly, "_genes_promoters"))
-annots_enhancers <- build_annotations(genome = genome_assembly, annotations = paste0(genome_assembly, "_enhancers_fantom"))
-
+annots_promoters <- build_annotations(genome = genome_assembly, annotations = paste0(genome_assembly, "_genes_promoters"))[[paste0(genome_assembly, "_genes_promoters")]]
+annots_enhancers <- build_annotations(genome = genome_assembly, annotations = paste0(genome_assembly, "_enhancers_fantom")]
 
 annotate_and_save <- function(df, prefix) {
   gr <- as(df, "GRanges")
@@ -286,7 +329,7 @@ annotate_and_save <- function(df, prefix) {
 # Example: annotate hypermethylated sites
 annotate_and_save(hyper_sites, "hyper_sites")
 
-# == 13. (Optional) Annotation with genomation ==
+# == 14. (Optional) Annotation with genomation ==
 # Uncomment and modify the following to perform genomation-based annotation:
 # txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
 # genes <- genes(txdb)

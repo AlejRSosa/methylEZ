@@ -137,7 +137,10 @@ class HSMetricsGUI(ttk.Frame):
     def create_command_generation_section(self):
         self.command_button_frame = ttk.Frame(self)
         self.command_button_frame.pack(pady=5)
-
+        # NEW: let columns stretch
+        self.command_button_frame.columnconfigure(0, weight=1)
+        self.command_button_frame.columnconfigure(1, weight=1)
+        
         self.generate_command_button = ttk.Button(self.command_button_frame, text="Generate Command",
                                                   command=lambda: generate_hsmetrics_command(self))
         self.generate_command_button.grid(row=0, column=0, padx=5)
@@ -153,9 +156,9 @@ class HSMetricsGUI(ttk.Frame):
         #self.copy_command_button = ttk.Button(self.command_button_frame, text="Copy Command",
         #                                      command=lambda: copy_command_to_clipboard(self))
         #self.copy_command_button.grid(row=0, column=1, padx=5)
-
-        #self.command_text = tk.Text(self.command_button_frame, height=4, width=100)
-        #self.command_text.grid(row=1, column=0, columnspan=3, pady=5)
+        # ADD (uncomment/replace old commented lines; adjust row to 2 and make it scrollable)
+        self.command_text = scrolledtext.ScrolledText(self.command_button_frame, height=6, width=120, wrap="none")
+        self.command_text.grid(row=2, column=0, columnspan=2, padx=5, pady=5, sticky="ew")
     """ def create_real_time_output_section(self):
         self.output_frame = ttk.Frame(self)
         self.output_frame.pack(pady=5)

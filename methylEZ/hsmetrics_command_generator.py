@@ -56,5 +56,8 @@ def generate_hsmetrics_command(self):
         command_lines.append(command)
 
     full_command = "\n".join(command_lines)
+    if not hasattr(self, "command_text") or self.command_text is None:
+        messagebox.showerror("GUI Error", "Internal error: command_text widget is missing in the GUI.")
+    return
     self.command_text.delete(1.0, tk.END)
     self.command_text.insert(tk.END, full_command)
