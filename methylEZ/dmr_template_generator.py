@@ -129,6 +129,24 @@ meth_obj <- methRead(location     = as.list(sample_files),
                      pipeline     = "bismarkCoverage",
                      header       = FALSE)
 
+
+# Alternative: if your files are in a custom format, specify the column mapping
+#meth_obj <- methRead(location  = as.list(sample_files),
+#sample.id = as.list(sample_ids),
+#assembly  = genome_assembly,
+#treatment = treatment,
+#pipeline  = list(
+#  fraction     = FALSE,
+#  chr.col      = 2,   # "chr"
+#  start.col    = 3,   # "base"
+#  end.col      = 3,   # "base" again — single bp
+#  strand.col   = 4,
+#  coverage.col = 5,
+#  freqC.col    = 6,
+#  freqT.col    = 7
+#),
+#header = TRUE) 
+
 # == 5. Coverage and Methylation Statistics ==
 # Plot coverage distributions for each sample
 pdf(file.path(output_dir, "coverage_stats.pdf"))
