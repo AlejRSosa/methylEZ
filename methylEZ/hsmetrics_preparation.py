@@ -267,28 +267,33 @@ class PicardPreparationFrame(ttk.Frame):
             # picard_jar_path = os.path.join(os.getcwd(), "lib", "picard.jar")
             dict_file = os.path.splitext(sorted_fasta)[0] + ".dict"
             
+            # NOTE: every line below must start at column 0 - this literal is
+            # written verbatim into the exported file, so leading whitespace
+            # here (previously inherited from this method's own indentation)
+            # produces an IndentationError the moment the Python portion of
+            # the exported file is run.
             code = f'''#!/usr/bin/env python
-    from Bio import SeqIO
+from Bio import SeqIO
 
-    def sort_key(record):
-        order = {{str(i): i for i in range(1, 23)}}
-        order['X'] = 23
-        order['Y'] = 24
-        order['MT'] = 25
-        chrom = record.id.split(' ')[0]
-        return (order.get(chrom, 26), chrom)
+def sort_key(record):
+    order = {{str(i): i for i in range(1, 23)}}
+    order['X'] = 23
+    order['Y'] = 24
+    order['MT'] = 25
+    chrom = record.id.split(' ')[0]
+    return (order.get(chrom, 26), chrom)
 
-    def sort_fasta_file(input_fasta, output_fasta):
-        records = list(SeqIO.parse(input_fasta, "fasta"))
-        records.sort(key=sort_key)
-        SeqIO.write(records, output_fasta, "fasta")
+def sort_fasta_file(input_fasta, output_fasta):
+    records = list(SeqIO.parse(input_fasta, "fasta"))
+    records.sort(key=sort_key)
+    SeqIO.write(records, output_fasta, "fasta")
 
-    if __name__ == "__main__":
-        input_fasta = r"{fasta}"
-        output_fasta = r"{sorted_fasta}"
-        sort_fasta_file(input_fasta, output_fasta)
-        print("Sorted FASTA saved as", output_fasta)
-    '''
+if __name__ == "__main__":
+    input_fasta = r"{fasta}"
+    output_fasta = r"{sorted_fasta}"
+    sort_fasta_file(input_fasta, output_fasta)
+    print("Sorted FASTA saved as", output_fasta)
+'''
             # Add a separator and further commands
             sep = "\n\n# --------------------\n\n"
             code += sep + f'samtools faidx "{sorted_fasta}"'
@@ -340,13 +345,23 @@ class PicardPreparationFrame(ttk.Frame):
     def export_bed_commands(self):
             bed = self.bed_entry.get()
             output_dir = self.out_entry.get()
+            dict_file = self.dict_entry.get()
             if not bed or not output_dir:
                 messagebox.showerror("Error", "Please select a BED file and an output directory.")
                 return
+            if not dict_file:
+                messagebox.showerror("Error", "Please select a sequence dictionary file (required by Picard BedToIntervalList).")
+                return
             output_interval = os.path.join(output_dir, os.path.basename(bed).replace(".bed", ".interval_list"))
+            picard_jar_path = Path(__file__).resolve().parent / "assets" / "picard.jar"
+            # Was previously a plain `cp` of the BED file, which is NOT a valid
+            # Picard interval_list (it's missing the required sequence
+            # dictionary header) - use the same BedToIntervalList command that
+            # generate_interval_list() runs interactively, so the exported
+            # template and the "Generate Interval List" button agree.
             code = f'''# Command for generating interval list from BED file
-    cp "{bed}" "{output_interval}"
-    '''
+java -jar "{picard_jar_path}" BedToIntervalList -I "{bed}" -O "{output_interval}" -SD "{dict_file}"
+'''
             filename = filedialog.asksaveasfilename(
                 title="Save BED Commands",
                 defaultextension=".txt",
@@ -376,28 +391,32 @@ class PicardPreparationFrame(ttk.Frame):
         commands = []
         if fasta:
             sorted_fasta = os.path.join(os.path.dirname(fasta), "sorted_" + os.path.basename(fasta))
+            # NOTE: every line below must start at column 0 - this literal is
+            # written verbatim into the exported file, so leading whitespace
+            # here (previously inherited from this method's own indentation)
+            # produces an IndentationError when the Python portion is run.
             prep_code = f'''#!/usr/bin/env python
-        from Bio import SeqIO
+from Bio import SeqIO
 
-        def sort_key(record):
-            order = {{str(i): i for i in range(1, 23)}}
-            order['X'] = 23
-            order['Y'] = 24
-            order['MT'] = 25
-            chrom = record.id.split(' ')[0]
-            return (order.get(chrom, 26), chrom)
+def sort_key(record):
+    order = {{str(i): i for i in range(1, 23)}}
+    order['X'] = 23
+    order['Y'] = 24
+    order['MT'] = 25
+    chrom = record.id.split(' ')[0]
+    return (order.get(chrom, 26), chrom)
 
-        def sort_fasta_file(input_fasta, output_fasta):
-            records = list(SeqIO.parse(input_fasta, "fasta"))
-            records.sort(key=sort_key)
-            SeqIO.write(records, output_fasta, "fasta")
+def sort_fasta_file(input_fasta, output_fasta):
+    records = list(SeqIO.parse(input_fasta, "fasta"))
+    records.sort(key=sort_key)
+    SeqIO.write(records, output_fasta, "fasta")
 
-        if __name__ == "__main__":
-            input_fasta = r"{fasta}"
-            output_fasta = r"{sorted_fasta}"
-            sort_fasta_file(input_fasta, output_fasta)
-            print("Sorted FASTA saved as", output_fasta)
-        '''
+if __name__ == "__main__":
+    input_fasta = r"{fasta}"
+    output_fasta = r"{sorted_fasta}"
+    sort_fasta_file(input_fasta, output_fasta)
+    print("Sorted FASTA saved as", output_fasta)
+'''
             commands.append(prep_code)
             commands.append(f'samtools faidx "{sorted_fasta}"')
             picard_jar_path = str(Path(__file__).resolve().parent / "assets" / "picard.jar")
@@ -409,13 +428,17 @@ class PicardPreparationFrame(ttk.Frame):
             commands.append(f'samtools index "{sorted_bam}"')
         if bed:
             output_interval = os.path.join(output_dir, os.path.basename(bed).replace(".bed", ".interval_list"))
-            # Here we assume a simple copy; replace with your actual command if needed.
-            commands.append(f'cp "{bed}" "{output_interval}"')
+            # Was previously a plain `cp` of the BED file, which is NOT a
+            # valid Picard interval_list (missing the required sequence
+            # dictionary header). Use the same BedToIntervalList command as
+            # generate_interval_list() / export_bed_commands() for consistency.
+            bed_dict_file = self.dict_entry.get() if hasattr(self, "dict_entry") else ""
+            picard_jar_path_bed = str(Path(__file__).resolve().parent / "assets" / "picard.jar")
+            commands.append(
+                f'java -jar "{picard_jar_path_bed}" BedToIntervalList -I "{bed}" -O "{output_interval}" -SD "{bed_dict_file}"'
+            )
 
-        # Join the commands with newlines
-        full_commands = "\n".join(commands)
-        
-        # Define a separator with an empty line and a comment
+        # Join the commands, separated by a blank line and a comment.
         separator = "\n\n# --------------------\n\n"
         full_commands = separator.join(commands)
 
