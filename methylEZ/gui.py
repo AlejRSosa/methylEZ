@@ -1,5 +1,4 @@
 import os
-import profile
 import tkinter as tk
 import tkinter.ttk as ttk # theme aesthetic widget
 from tkinter import messagebox
@@ -30,10 +29,14 @@ class MethylSeqGUI(Navigation):
       
         try:
             # Initialize variables and states
+            # NOTE: self.aligner / self.genome / self.profile are created in
+            # create_pipeline_settings_section() below, tied to their dropdown
+            # widgets - they used to also be created here with different
+            # ("real") defaults, but create_pipeline_settings_section()
+            # immediately replaced them with fresh StringVars anyway, so the
+            # values set here were always dead. Declaring them only once,
+            # where their widgets live, avoids that trap.
             self.file_paths = []
-            self.aligner = tk.StringVar(value="bismark")
-            self.genome = tk.StringVar(value="GRCh37")
-            self.profile = tk.StringVar(value="docker")
             self.output_dir = tk.StringVar(value=os.getcwd())
             self.samplesheet_name = tk.StringVar(value="samplesheet.csv")
             self.file_type = {}
@@ -212,6 +215,21 @@ class MethylSeqGUI(Navigation):
             self.profile_menu.pack(side=tk.LEFT, padx=5)
             self.profile_menu.bind("<Enter>", lambda e: self.set_status("Select the execution profile for the pipeline (Docker/Singularity)."))
             self.profile_menu.bind("<Leave>", lambda e: self.set_status(""))
+
+            # Genome selection - previously there was no way at all to change
+            # this from the UI (it was hardcoded to "GRCh37" in __init__ with
+            # no dropdown/entry anywhere), unlike aligner/profile which did
+            # have selectors. Added here for parity; generate_command()
+            # now validates it the same way as aligner/profile.
+            genomes = ["Select genome", "GRCh37", "GRCh38", "GRCm38", "GRCm39"]
+            self.genome = tk.StringVar(value=genomes[0])
+            self.genome_label = ttk.Label(self.settings_frame, text="Select Genome:")
+            self.genome_label.pack(side=tk.LEFT, padx=5)
+
+            self.genome_menu = ttk.OptionMenu(self.settings_frame, self.genome, *genomes)
+            self.genome_menu.pack(side=tk.LEFT, padx=5)
+            self.genome_menu.bind("<Enter>", lambda e: self.set_status("Choose the reference genome for the pipeline."))
+            self.genome_menu.bind("<Leave>", lambda e: self.set_status(""))
 
             # Output Directory Selection
             self.output_dir_frame = ttk.Frame(self)
