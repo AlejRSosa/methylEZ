@@ -311,16 +311,20 @@ class HSMetricsGUI(ttk.Frame):
     
     def export_parser_template(self):
         # Define a template string that calls your parser function.
-        template_code = '''#!/usr/bin/env python
-    from methylEZ.hsmetrics_parser import parse_picard_output
+        # NOTE: every line must start at column 0 - this literal is written
+        # verbatim to a standalone .py file, so any leading whitespace here
+        # (previously inherited from this method's own indentation) produces
+        # an IndentationError the moment the exported script is run.
+        template_code = r'''#!/usr/bin/env python
+from methylEZ.hsmetrics_parser import parse_picard_output
 
-    # Set these variables accordingly:
-    picard_output_directory = r"Path_to_Picard_Output_Folder"
-    output_csv = r"Path_where_the_CSV_should_be_saved.csv"
+# Set these variables accordingly:
+picard_output_directory = r"Path_to_Picard_Output_Folder"
+output_csv = r"Path_where_the_CSV_should_be_saved.csv"
 
-    parse_picard_output(picard_output_directory, output_csv)
-    print("Parsed data saved to", output_csv)
-    '''
+parse_picard_output(picard_output_directory, output_csv)
+print("Parsed data saved to", output_csv)
+'''
         # Ask the user where to save the file:
         output_dir = self.output_dir.get() if hasattr(self, "output_dir") else os.getcwd()
         filename = filedialog.asksaveasfilename(title="Save Parser Template",
@@ -343,61 +347,71 @@ class HSMetricsGUI(ttk.Frame):
         The template contains inline code (no external dependencies on methylEZ) so that
         the user can modify the input folder and output CSV paths as needed.
         """
-        template_code = '''#!/usr/bin/env python
-    import os
-    import glob
-    import pandas as pd
+        # NOTE: every line below must start at column 0 - this literal is
+        # written verbatim to a standalone .py file, so leading whitespace
+        # here (previously inherited from this method's indentation)
+        # produces an IndentationError the moment the exported script runs.
+        # Also fixed the glob pattern to match what this app actually
+        # generates ("*_hs_metrics.txt", see hsmetrics_command_generator.py's
+        # clean_output_filename() and hsmetrics_parser.py) - it previously
+        # looked for "*_hs_metrics_Ly.txt", which nothing in this codebase
+        # produces, so the exported template would always report "No Picard
+        # output files found" even when pointed at real output.
+        template_code = r'''#!/usr/bin/env python
+import os
+import glob
+import pandas as pd
 
-    def parse_picard_output(directory, output_csv):
-        """
-        Parses Picard CollectHsMetrics output files in the specified directory
-        and consolidates them into a CSV file.
-        
-        It looks for files matching the pattern "*_hs_metrics_Ly.txt", extracts the header
-        from the first file, and prepends each data line with the sample identifier.
-        """
-        files = glob.glob(os.path.join(directory, "*_hs_metrics_Ly.txt"))
-        if not files:
-            print("No Picard output files found in", directory)
-            return
+def parse_picard_output(directory, output_csv):
+    """
+    Parses Picard CollectHsMetrics output files in the specified directory
+    and consolidates them into a CSV file.
 
-        all_lines = []
-        header_written = False
+    It looks for files matching the pattern "*_hs_metrics.txt", extracts the header
+    from the first file, and prepends each data line with the sample identifier.
+    """
+    files = glob.glob(os.path.join(directory, "*_hs_metrics.txt"))
+    if not files:
+        print("No Picard output files found in", directory)
+        return
 
-        for file in files:
-            sample_id = os.path.basename(file).replace("_hs_metrics_Ly.txt", "")
-            with open(file, "r") as f:
-                lines = f.readlines()
-            try:
-                start_idx = next(i for i, line in enumerate(lines) if "## METRICS CLASS" in line) + 1
-                end_idx = next(i for i, line in enumerate(lines) if "## HISTOGRAM" in line)
-                metrics = lines[start_idx:end_idx]
-                if not metrics or len(metrics) < 2:
-                    print(f"Skipping file {file}: not enough data lines.")
-                    continue
-                if not header_written:
-                    header = "SAMPLE_IDENTIFIER\t" + metrics[0].strip()
-                    all_lines.append(header)
-                    header_written = True
-                for line in metrics[1:]:
-                    clean_line = line.strip()
-                    if not clean_line or "BAIT_SET" in clean_line:
-                        continue
-                    all_lines.append(f"{sample_id}\t{clean_line}")
-            except StopIteration:
-                print(f"Skipping file {file}: Incorrect format.")
+    all_lines = []
+    header_written = False
+
+    for file in files:
+        sample_id = os.path.basename(file).replace("_hs_metrics.txt", "")
+        with open(file, "r") as f:
+            lines = f.readlines()
+        try:
+            start_idx = next(i for i, line in enumerate(lines) if "## METRICS CLASS" in line) + 1
+            end_idx = next(i for i, line in enumerate(lines) if "## HISTOGRAM" in line)
+            metrics = lines[start_idx:end_idx]
+            if not metrics or len(metrics) < 2:
+                print(f"Skipping file {file}: not enough data lines.")
                 continue
+            if not header_written:
+                header = "SAMPLE_IDENTIFIER\t" + metrics[0].strip()
+                all_lines.append(header)
+                header_written = True
+            for line in metrics[1:]:
+                clean_line = line.strip()
+                if not clean_line or "BAIT_SET" in clean_line:
+                    continue
+                all_lines.append(f"{sample_id}\t{clean_line}")
+        except StopIteration:
+            print(f"Skipping file {file}: Incorrect format.")
+            continue
 
-        with open(output_csv, "w") as f:
-            f.write("\n".join(all_lines))
-        print(f"Parsed data saved to {output_csv}")
+    with open(output_csv, "w") as f:
+        f.write("\n".join(all_lines))
+    print(f"Parsed data saved to {output_csv}")
 
-    if __name__ == "__main__":
-        # MODIFY THE FOLLOWING PATHS BEFORE RUNNING:
-        picard_output_dir = r"/path/to/PicardOutputs"
-        output_csv = r"/path/to/parsed_output.csv"
-        parse_picard_output(picard_output_dir, output_csv)
-    '''
+if __name__ == "__main__":
+    # MODIFY THE FOLLOWING PATHS BEFORE RUNNING:
+    picard_output_dir = r"/path/to/PicardOutputs"
+    output_csv = r"/path/to/parsed_output.csv"
+    parse_picard_output(picard_output_dir, output_csv)
+'''
         # Where to save the file (ask user input)
         filename = filedialog.asksaveasfilename(title="Save Parsing Template", defaultextension=".py",
                                                 initialfile="parse_picard_template.py")
@@ -410,3 +424,4 @@ class HSMetricsGUI(ttk.Frame):
                 messagebox.showerror("Error", f"Error writing file: {e}")
         else:
             messagebox.showinfo("Canceled", "No file selected.")
+

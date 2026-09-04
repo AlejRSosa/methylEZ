@@ -102,11 +102,17 @@ library(openxlsx)
 library(methylKit)
 library(pheatmap)
 library(ComplexHeatmap)
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(genomation)
 library(dplyr)
 library(annotatr)
 library(matrixStats)
+# NOTE: TxDb.Hsapiens.UCSC.hg19.knownGene is intentionally NOT loaded here.
+# It used to be loaded unconditionally regardless of genome_assembly below,
+# which meant this script would fail on library() for any user analyzing
+# hg38/mouse/etc. data unless they also happened to have the hg19-specific
+# package installed - even though nothing in the active analysis path uses
+# it (the only reference is in the commented-out genomation section, == 13,
+# where it's loaded explicitly if you enable that section).
 
 # == 3. Read Sample Sheet and Prepare Sample Info ==
 samples_df <- read.csv(samplesheet_path, header = TRUE, stringsAsFactors = FALSE)

@@ -26,9 +26,16 @@ def generate_samplesheet(self):
         # Read detection: case-insensitive; supports separators or plain suffix like SampleR1
         def read_of(stem: str):
             s = stem.lower()
-            if re.search(r"(^|[._-])r?1([._-]|$)", s) or re.search(r"r?1$", s):
+            # A trailing 1/2 is only treated as a read marker when it is
+            # preceded by a separator (handled by the first alternative) or by
+            # an explicit "r" with no separator, e.g. "SampleR1" (handled by
+            # the second). A BARE trailing digit with neither - e.g.
+            # "control1", "WT2" - is NOT a read indicator: matching it used to
+            # silently merge unrelated single-end samples like "WT1"/"WT2" or
+            # "control1"/"control2" into one fake paired-end sample.
+            if re.search(r"(^|[._-])r?1([._-]|$)", s) or re.search(r"r1$", s):
                 return "1"
-            if re.search(r"(^|[._-])r?2([._-]|$)", s) or re.search(r"r?2$", s):
+            if re.search(r"(^|[._-])r?2([._-]|$)", s) or re.search(r"r2$", s):
                 return "2"
             return None  # unknown
 
@@ -103,6 +110,25 @@ def generate_command(self):
         if not os.path.exists(samplesheet_path):
             raise FileNotFoundError(f"Samplesheet not found at {samplesheet_path}. Please generate it first.")
 
+        # Guard against the dropdown placeholder text ("Select aligner" /
+        # "Select genome" / "Select profile") being used as-is: previously
+        # nothing checked this, so generating a command without touching one
+        # of the dropdowns silently produced an invalid Nextflow invocation
+        # like "--aligner Select aligner --profile Select profile".
+        genome = (self.genome.get() or "").strip()
+        aligner = (self.aligner.get() or "").strip()
+        profile = (self.profile.get() or "").strip()
+        missing = [
+            label for label, value in (("genome", genome), ("aligner", aligner), ("profile", profile))
+            if not value or value.lower().startswith("select")
+        ]
+        if missing:
+            messagebox.showerror(
+                "Error",
+                "Please select a value for: " + ", ".join(missing) + " before generating the command.",
+            )
+            return
+
         # Decide --single_end only if ALL rows are single-end
         all_single = False
         try:
@@ -116,8 +142,8 @@ def generate_command(self):
 
         command = (
             f"nextflow run nf-core/methylseq --input {dq(samplesheet_path)} "
-            f"--outdir {dq(output_dir)} --genome {self.genome.get()} "
-            f"--aligner {self.aligner.get()} --profile {self.profile.get()}"
+            f"--outdir {dq(output_dir)} --genome {genome} "
+            f"--aligner {aligner} --profile {profile}"
         )
         if all_single:
             command += " --single_end"
